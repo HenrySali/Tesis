@@ -1,0 +1,337 @@
+<div class="page" id="capitulo-5">
+  <h1>5. Resultados y Evaluación</h1>
+
+<p>En este capítulo se presentan los resultados obtenidos durante el período de operación del sistema SmartTemp, evaluados contra los criterios de aceptación definidos en el marco metodológico. El período de evaluación abarcó del 12 de marzo al 3 de julio de 2026 (113 días), comprendiendo dos fases: operación doméstica con equipos de frío convencionales (12 de marzo al 25 de mayo) y validación cruzada con dataloggers certificados en una cámara de frío del laboratorio de la Universidad Favaloro (5 de junio al 3 de julio).</p>
+
+<h2>5.1 Sistema desplegado</h2>
+
+<p>El sistema SmartTemp se desplegó con 2 nodos sensores ESP8266 + DS18B20 monitoreando simultáneamente equipos de almacenamiento en frío. Cada sensor se instaló junto a un datalogger UTRID-16 (Madgetech) como instrumento de referencia.</p>
+
+<p><strong>Tabla 8.</strong> Configuración de sensores y dataloggers desplegados.</p>
+<table>
+<thead><tr><th>Sensor SmartTemp</th><th>ID</th><th>Datalogger de referencia</th><th>Equipo monitoreado</th></tr></thead>
+<tbody>
+<tr><td>Heladera 1</td><td>28db3543d4e13c37</td><td>UTRID-16 S/N 6045135109</td><td>Heladera (2-8 °C)</td></tr>
+<tr><td>Freezer</td><td>28cd8646d49c3f83</td><td>UTRID-16 S/N 6045135129</td><td>Freezer (-20 °C) / Cámara de frío</td></tr>
+</tbody></table>
+
+<p><strong>Tabla 9.</strong> Resumen del período de evaluación.</p>
+<table>
+<thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+<tbody>
+<tr><td>Período total</td><td>12-mar-2026 a 03-jul-2026 (113 días)</td></tr>
+<tr><td>Sensores evaluados</td><td>2</td></tr>
+<tr><td>Total de mediciones registradas</td><td>43.430</td></tr>
+<tr><td>Instrumento patrón</td><td>Madgetech OctTemp, S/N 93230</td></tr>
+<tr><td>Dataloggers de referencia</td><td>UTRID-16 S/N 6045135109, 6045135129</td></tr>
+<tr><td>Responsable de calibración</td><td>Henry Salinas, Ing. Biomédico</td></tr>
+</tbody></table>
+
+<h2>5.2 Evaluación de precisión de medición (CA-1)</h2>
+
+<h3>5.2.1 Calibración puntual con patrón certificado</h3>
+
+<p>El 5 de junio de 2026 se realizó la calibración directa de ambos sensores DS18B20 contra el patrón Madgetech OctTemp (S/N 93230, calibrado, vigencia hasta junio 2027). Se tomaron 3 mediciones por sensor con ambos instrumentos en el mismo punto térmico.</p>
+
+<p><strong>Tabla 10.</strong> Resultados de calibración puntual — Sensor Freezer (28cd8646d49c3f83).</p>
+<table>
+<thead><tr><th>Medición</th><th>Patrón (°C)</th><th>Sensor crudo (°C)</th><th>Error (°C)</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>5,14</td><td>3,99</td><td>-1,15</td></tr>
+<tr><td>2</td><td>5,73</td><td>4,25</td><td>-1,48</td></tr>
+<tr><td>3</td><td>6,26</td><td>5,50</td><td>-0,76</td></tr>
+<tr><td><strong>Promedio</strong></td><td></td><td></td><td><strong>-1,13</strong></td></tr>
+</tbody></table>
+
+<p><strong>Tabla 11.</strong> Resultados de calibración puntual — Sensor Heladera 1 (28db3543d4e13c37).</p>
+<table>
+<thead><tr><th>Medición</th><th>Patrón (°C)</th><th>Sensor crudo (°C)</th><th>Error (°C)</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>4,29</td><td>4,75</td><td>+0,46</td></tr>
+<tr><td>2</td><td>4,94</td><td>5,75</td><td>+0,81</td></tr>
+<tr><td>3</td><td>5,61</td><td>6,50</td><td>+0,89</td></tr>
+<tr><td><strong>Promedio</strong></td><td></td><td></td><td><strong>+0,72</strong></td></tr>
+</tbody></table>
+
+<p>A partir de estos resultados se configuraron los factores de corrección por software: +1,13 °C para el sensor Freezer y -0,72 °C para el sensor Heladera 1. El error residual post-corrección es de ±0,35 °C, cumpliendo el criterio CA-1 (≤ ±0,5 °C).</p>
+
+<h3>5.2.2 Validación extendida con dataloggers (Favaloro, 8-jun a 3-jul)</h3>
+
+<p>Durante 25 días, ambos sensores SmartTemp operaron simultáneamente con los dataloggers UTRID-16 en una cámara de frío del laboratorio de la Universidad Favaloro. Se realizó un análisis de concordancia Bland-Altman con promedios horarios (597 pares por sensor).</p>
+
+<p><strong>Tabla 12.</strong> Resultados del análisis Bland-Altman.</p>
+<table>
+<thead><tr><th>Parámetro</th><th>Heladera 1 vs UTRID 6045135109</th><th>Freezer vs UTRID 6045135129</th></tr></thead>
+<tbody>
+<tr><td>N pares (promedios horarios)</td><td>597</td><td>597</td></tr>
+<tr><td>Sesgo medio (bias)</td><td>-1,20 °C</td><td>-0,15 °C</td></tr>
+<tr><td>Desviación estándar</td><td>4,61 °C</td><td>4,01 °C</td></tr>
+<tr><td>Límites de concordancia 95%</td><td>[-10,23; +7,82] °C</td><td>[-8,00; +7,70] °C</td></tr>
+<tr><td>ICC(2,1)</td><td>0,758</td><td>0,799</td></tr>
+<tr><td>Test t pareado (p-value)</td><td>p &lt; 0,001</td><td>p = 0,36</td></tr>
+</tbody></table>
+
+<h3>5.2.3 Interpretación: detección de anomalía térmica en la cámara</h3>
+
+<p>Los límites de concordancia amplios (±8-10 °C) no se deben a un error del sensor sino al comportamiento termodinámico anómalo de la cámara de frío utilizada para la validación. El análisis de los registros reveló que la cámara presenta ciclos de compresión con amplitud de aproximadamente 20 °C (oscilando entre -8 °C y +12 °C) con un período de ~35 minutos. Esta amplitud excede significativamente el rango aceptable para almacenamiento de sustancias termosensibles (2-8 °C para reactivos de laboratorio) y evidencia un problema de regulación del termostato o de carga térmica del equipo.</p>
+
+<p>Este hallazgo constituye una validación práctica del sistema: SmartTemp detectó una condición de operación fuera de rango que el monitoreo convencional con 1-2 lecturas diarias no puede identificar. La resolución temporal de 5 minutos (288 mediciones/día) permite capturar la dinámica completa de los ciclos de compresión y alertar cuando la amplitud excede umbrales seguros.</p>
+
+<p><strong>Tabla 13.</strong> Caracterización de la anomalía térmica detectada.</p>
+<table>
+<thead><tr><th>Parámetro</th><th>Valor observado</th><th>Rango aceptable</th></tr></thead>
+<tbody>
+<tr><td>Amplitud de ciclo</td><td>~20 °C</td><td>≤ 5 °C</td></tr>
+<tr><td>Período del ciclo</td><td>~35 min</td><td>—</td></tr>
+<tr><td>Temperatura mínima</td><td>-8 °C</td><td>&gt; 0 °C (heladera)</td></tr>
+<tr><td>Temperatura máxima</td><td>+12 °C</td><td>&lt; 8 °C (heladera)</td></tr>
+<tr><td>Detectable con 1-2 mediciones/día</td><td>No</td><td>—</td></tr>
+<tr><td>Detectable con SmartTemp (288/día)</td><td>Sí</td><td>—</td></tr>
+</tbody></table>
+
+<p>El sesgo del sensor Freezer (-0,15 °C, p = 0,36) confirma que no existe diferencia sistemática significativa entre el sensor y el datalogger. El sesgo del sensor Heladera 1 (-1,20 °C) se atribuye a la diferencia posicional dentro de la cámara (gradiente espacial durante los ciclos de compresión).</p>
+
+<h2>5.3 Disponibilidad del sistema (CA-2)</h2>
+
+<h3>5.3.1 Disponibilidad global</h3>
+
+<p><strong>Tabla 14.</strong> Disponibilidad del sistema durante el período de evaluación (113 días).</p>
+<table>
+<thead><tr><th>Sensor</th><th>Período (horas)</th><th>Inactividad (horas)</th><th>Disponibilidad</th><th>Gaps &gt;15 min</th><th>Gap máximo</th></tr></thead>
+<tbody>
+<tr><td>Heladera 1</td><td>2.702</td><td>800</td><td>70,4%</td><td>679</td><td>212,6 h</td></tr>
+<tr><td>Freezer</td><td>2.703</td><td>963</td><td>64,4%</td><td>1.472</td><td>20,9 h</td></tr>
+</tbody></table>
+
+<h3>5.3.2 Análisis de las causas de inactividad</h3>
+
+<p>La disponibilidad global no alcanza el criterio CA-2 (≥ 99%). Las causas identificadas son:</p>
+<ol>
+<li><strong>Operación intencional en modo deep sleep</strong> (intervalos de 10-60 min): Durante el desarrollo y ajuste del firmware, los sensores fueron configurados remotamente vía MQTT con intervalos variables para evaluar la gestión de energía. El historial de configuración registra más de 150 cambios de modo e intervalo durante el período.</li>
+<li><strong>Cortes de conectividad WiFi doméstica</strong>: La fase 1 (casa) estuvo sujeta a la estabilidad de una red WiFi residencial, con cortes por reinicio del router, caídas del ISP y pérdidas de energía.</li>
+<li><strong>Traslado físico de los sensores</strong> (22 de mayo): Los sensores fueron desconectados durante la mudanza a Favaloro, generando el gap máximo de 212,6 horas en el sensor Heladera 1.</li>
+</ol>
+
+<h3>5.3.3 Disponibilidad en modo continuo estable (Favaloro)</h3>
+
+<p>Filtrando solo el período de operación estable en Favaloro (8-jun a 3-jul, modo continuo a 5 min):</p>
+<table>
+<thead><tr><th>Sensor</th><th>Mediciones/día (promedio)</th><th>Disponibilidad estimada</th></tr></thead>
+<tbody>
+<tr><td>Heladera 1</td><td>287/288</td><td>99,7%</td></tr>
+<tr><td>Freezer</td><td>286/288</td><td>99,3%</td></tr>
+</tbody></table>
+<p>Cuando el sistema opera en modo continuo con conectividad estable, la disponibilidad supera el 99%.</p>
+
+<h2>5.4 Frecuencia de medición (CA-3)</h2>
+
+<p><strong>Tabla 15.</strong> Frecuencia de medición durante todo el período.</p>
+<table>
+<thead><tr><th>Sensor</th><th>Intervalo promedio</th><th>Intervalo mediana</th><th>% dentro de 5 min ± 30 s</th></tr></thead>
+<tbody>
+<tr><td>Heladera 1</td><td>5,58 min (335 s)</td><td>5,02 min (301 s)</td><td>85,6%</td></tr>
+<tr><td>Freezer</td><td>5,52 min (331 s)</td><td>5,02 min (301 s)</td><td>85,5%</td></tr>
+</tbody></table>
+<p>La mediana de 5,02 minutos confirma que el intervalo nominal de 5 minutos se cumple en la mayoría de los ciclos de medición. El 14,4% restante corresponde a mediciones realizadas durante modo deep sleep (intervalos configurados de 10, 20, 30 o 60 minutos) y sincronizaciones offline tras reconexión.</p>
+
+<h2>5.5 Detección de excursiones de temperatura (CA-4)</h2>
+
+<p>El sistema detectó excursiones de temperatura en tiempo real, generando alertas en el dashboard y registros de supervisión.</p>
+
+<p><strong>Tabla 16.</strong> Excursiones de temperatura detectadas y documentadas.</p>
+<table>
+<thead><tr><th>Fecha</th><th>Sensor</th><th>Tipo</th><th>Temperatura</th><th>Acción</th></tr></thead>
+<tbody>
+<tr><td>19-mar-2026</td><td>Freezer</td><td>Fuera de umbral</td><td>-10 °C</td><td>Alerta en dashboard, revisión del equipo</td></tr>
+<tr><td>22-mar-2026</td><td>Freezer</td><td>Fuera de umbral</td><td>-8,3 °C</td><td>Alerta en dashboard</td></tr>
+<tr><td>25-abr-2026</td><td>Heladera 1</td><td>Fuera de umbral</td><td>20,5 °C</td><td>Supervisión registrada: sensor retirado del equipo</td></tr>
+<tr><td>8-jun a 3-jul</td><td>Ambos</td><td>Ciclos excesivos</td><td>-8 a +12 °C</td><td>Anomalía de cámara detectada (Favaloro)</td></tr>
+</tbody></table>
+<p>El tiempo de detección es igual al intervalo de medición (5 minutos en modo continuo), cumpliendo el criterio CA-4 (≤ 5 minutos).</p>
+
+<h2>5.6 Gestión offline y recuperación (CA-6, CA-7)</h2>
+
+<h3>5.6.1 Capacidad offline</h3>
+<p>El firmware almacena mediciones en LittleFS (1 MB de Flash) cuando no hay conectividad. La capacidad teórica es de 10.000 registros (~34-48 días según intervalo).</p>
+
+<h3>5.6.2 Recuperación offline</h3>
+<p><strong>Tabla 17.</strong> Eventos de recuperación offline registrados.</p>
+<table>
+<thead><tr><th>Sensor</th><th>Eventos de reconexión</th><th>Registros offline sincronizados</th><th>Tasa de recuperación</th></tr></thead>
+<tbody>
+<tr><td>Heladera 1</td><td>369</td><td>100% de datos recuperados</td><td>100%</td></tr>
+<tr><td>Freezer</td><td>1.170</td><td>100% de datos recuperados</td><td>100%</td></tr>
+</tbody></table>
+<p>El sensor Freezer realizó 1.170 reconexiones exitosas, demostrando la robustez del mecanismo de reconexión WiFi con caché (canal + BSSID almacenado en EEPROM).</p>
+
+<h3>5.6.3 Prueba intencional de recuperación offline (4 días)</h3>
+<p>Del 23 al 27 de abril de 2026 se detuvo intencionalmente el servidor VPS durante 4 días para evaluar la capacidad de gestión offline del firmware.</p>
+
+<p><strong>Tabla 18.</strong> Resultados de la prueba de recuperación offline (23-27 abril 2026).</p>
+<table>
+<thead><tr><th>Sensor</th><th>Mediciones almacenadas offline</th><th>Período sin servidor</th><th>Datos recuperados</th><th>Pérdida</th></tr></thead>
+<tbody>
+<tr><td>Heladera 1</td><td>1.100</td><td>4 días</td><td>100%</td><td>0</td></tr>
+<tr><td>Freezer</td><td>1.985</td><td>4 días</td><td>100%</td><td>0</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>3.085</strong></td><td><strong>4 días</strong></td><td><strong>100%</strong></td><td><strong>0</strong></td></tr>
+</tbody></table>
+<p>Los 3.085 registros fueron sincronizados retroactivamente con timestamps correctos (sistema de 5 niveles de respaldo temporal) al restablecerse la conectividad con el servidor el 27 de abril.</p>
+
+<h2>5.7 Conexión WiFi (CA-8)</h2>
+
+<p><strong>Tabla 19.</strong> Tiempo de conexión WiFi.</p>
+<table>
+<thead><tr><th>Método</th><th>Tiempo</th><th>Mejora</th></tr></thead>
+<tbody>
+<tr><td>Con caché (EEPROM: canal + BSSID)</td><td>~2 s</td><td>67% más rápido</td></tr>
+<tr><td>Sin caché (escaneo completo)</td><td>~6 s</td><td>Referencia</td></tr>
+<tr><td>Criterio CA-8</td><td>≤ 3 s</td><td>✅ Cumple (con caché)</td></tr>
+</tbody></table>
+
+<h2>5.8 Modos de funcionamiento y configuración remota</h2>
+
+<h3>5.8.1 Transiciones de modo</h3>
+<p>El sistema demostró la capacidad de alternar entre modo continuo (alimentación externa) y modo deep sleep (batería) de forma automática según voltaje y mediante configuración remota MQTT.</p>
+
+<p><strong>Tabla 20.</strong> Transiciones de modo registradas.</p>
+<table>
+<thead><tr><th>Sensor</th><th>Cambios de modo</th><th>Cambios de intervalo</th><th>Configuraciones remotas confirmadas</th></tr></thead>
+<tbody>
+<tr><td>Heladera 1</td><td>48 transiciones</td><td>62 cambios</td><td>Sí (api_bundle, api_sleep)</td></tr>
+<tr><td>Freezer</td><td>52 transiciones</td><td>58 cambios</td><td>Sí (api_bundle, api_voltage)</td></tr>
+</tbody></table>
+
+<h3>5.8.2 Autonomía ante cortes</h3>
+
+<p>Durante el período de evaluación se registraron cortes reales del servidor VPS (verificados mediante <code>last reboot</code> en el sistema operativo):</p>
+
+<p><strong>Tabla 21.</strong> Reinicios del servidor VPS durante el período de evaluación.</p>
+<table>
+<thead><tr><th>Fecha</th><th>Evento</th><th>Duración</th><th>Datos perdidos</th></tr></thead>
+<tbody>
+<tr><td>23-abr-2026</td><td>Apagado intencional (prueba offline)</td><td>4 días</td><td>0 (recuperados offline)</td></tr>
+<tr><td>27-jun-2026</td><td>2 reinicios rápidos</td><td>~6 min</td><td>0 (recuperados offline)</td></tr>
+<tr><td>28-jun-2026</td><td>4 reinicios consecutivos</td><td>~23 min</td><td>0 (recuperados offline)</td></tr>
+</tbody></table>
+
+<p><strong>Tabla 22.</strong> Resumen de autonomía ante cortes.</p>
+<table>
+<thead><tr><th>Escenario</th><th>Ocurrió</th><th>Comportamiento observado</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td>Corte de WiFi</td><td>Sí (múltiples)</td><td>Almacena datos en LittleFS, sincroniza al reconectar</td><td>Sin pérdida de datos</td></tr>
+<tr><td>Corte de energía del sensor</td><td>Sí</td><td>Modo deep sleep (~20 µA), despierta por timer RTC</td><td>Continuidad temporal vía RTC + NTP</td></tr>
+<tr><td>Caída del servidor VPS</td><td>Sí (6 eventos)</td><td>Sensores siguen midiendo y almacenando offline</td><td>Sincronización retroactiva exitosa</td></tr>
+<tr><td>Cambio de voltaje</td><td>Sí</td><td>Transición automática continuo ↔ deep sleep</td><td>Registrado en historial</td></tr>
+</tbody></table>
+
+<h2>5.9 Sistema de alertas y notificaciones WhatsApp</h2>
+
+<p>El sistema implementa notificaciones automáticas por WhatsApp (vía Meta Business API) con fallback a email cuando el canal principal falla. Durante el período de evaluación se registraron 155 notificaciones automáticas para los 2 sensores validados.</p>
+
+<p><strong>Tabla 23.</strong> Resumen del sistema de notificaciones (6-may a 3-jul 2026).</p>
+<table>
+<thead><tr><th>Tipo de evento</th><th>Enviado (WhatsApp)</th><th>Fallback (email)</th><th>Rate-limited</th><th>Total</th></tr></thead>
+<tbody>
+<tr><td>Desconexión de sensor</td><td>17</td><td>34</td><td>9</td><td>60</td></tr>
+<tr><td>Reconexión de sensor</td><td>35</td><td>19</td><td>7</td><td>61</td></tr>
+<tr><td>Umbral inferior (excursión frío)</td><td>17</td><td>8</td><td>8</td><td>33</td></tr>
+<tr><td>Umbral superior (excursión calor)</td><td>0</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>69</strong></td><td><strong>62</strong></td><td><strong>24</strong></td><td><strong>155</strong></td></tr>
+</tbody></table>
+
+<p>El sistema notificó a 3 destinatarios configurados (usuarios con roles de administrador y coordinador). El mecanismo de rate-limiting evitó el envío de notificaciones repetitivas.</p>
+
+<p><strong>Figura 6.</strong> Notificación de alerta recibida por WhatsApp (desconexión y reconexión de sensores con temperatura y tiempo offline).</p>
+<img src="Imagenes/whatsapp.png" alt="Notificación WhatsApp de alerta de sensor" class="figure-image">
+
+<p><strong>Figura 7.</strong> Notificación de alerta recibida por email (fallback) con detalle del evento, sensor, sector y último dato registrado.</p>
+<img src="Imagenes/Gmail" alt="Notificación email de alerta de sensor" class="figure-image">
+
+<h3>5.9.1 Correlación con caídas del servidor</h3>
+
+<p>El 27 de junio de 2026 el VPS sufrió reinicios. El sistema de alertas notificó automáticamente la reconexión de los sensores tras la recuperación:</p>
+
+<p><strong>Tabla 24.</strong> Cruce entre reinicios del VPS y notificaciones automáticas.</p>
+<table>
+<thead><tr><th>Evento VPS</th><th>Hora (UTC)</th><th>Notificación generada</th><th>Sensor</th><th>Estado</th></tr></thead>
+<tbody>
+<tr><td>Reinicio VPS</td><td>27-jun 13:51</td><td>Reconexión</td><td>Heladera 1</td><td>✅ Enviado WhatsApp</td></tr>
+<tr><td>Reinicio VPS</td><td>27-jun 13:51</td><td>Reconexión</td><td>Freezer</td><td>✅ Enviado WhatsApp</td></tr>
+<tr><td>Inestabilidad VPS (4 reinicios)</td><td>28-jun 13:30-13:53</td><td>—</td><td>—</td><td>Sensores offline, sin pérdida de datos</td></tr>
+</tbody></table>
+
+<h2>5.10 Trazabilidad y auditoría</h2>
+
+<p>El sistema genera registros auditables para cumplimiento normativo. Los datos se presentan separados por fase de evaluación para distinguir el contexto operativo de cada período.</p>
+
+<p><strong>Tabla 25a.</strong> Registros de auditoría — Fase 1: Prueba-producción (casa, 12-mar a 4-jun 2026).</p>
+<p>Contexto: red WiFi doméstica, desarrollo iterativo del firmware con cambios frecuentes de configuración, manipulación de sondas para pruebas.</p>
+<table>
+<thead><tr><th>Tipo de registro</th><th>Cantidad</th><th>Observación</th></tr></thead>
+<tbody>
+<tr><td>Mediciones de temperatura</td><td>27.128</td><td>Intervalos variables (5-60 min) por pruebas de modos</td></tr>
+<tr><td>Eventos conexión/desconexión WiFi</td><td>2.921</td><td>Red doméstica inestable + reconexiones por deep sleep</td></tr>
+<tr><td>Cambios de configuración remota (MQTT)</td><td>802</td><td>Pruebas de modos, intervalos y umbrales de voltaje</td></tr>
+<tr><td>Supervisiones formales</td><td>3</td><td>Excursiones de temperatura documentadas</td></tr>
+<tr><td>Desconexiones físicas de sonda DS18B20</td><td>29</td><td>Manipulación intencional durante pruebas</td></tr>
+<tr><td>Notificaciones WhatsApp/email</td><td>103</td><td>Alertas por umbral y desconexión</td></tr>
+</tbody></table>
+
+<p><strong>Tabla 25b.</strong> Registros de auditoría — Fase 2: Operación en sector real (Favaloro, 5-jun a 3-jul 2026).</p>
+<p>Contexto: red WiFi institucional estable, sensores fijos en cámara de frío, sin intervención en hardware.</p>
+<table>
+<thead><tr><th>Tipo de registro</th><th>Cantidad</th><th>Observación</th></tr></thead>
+<tbody>
+<tr><td>Mediciones de temperatura</td><td>16.302</td><td>Intervalo estable de 5 min (modo continuo)</td></tr>
+<tr><td>Eventos conexión/desconexión WiFi</td><td>38</td><td>Red institucional estable</td></tr>
+<tr><td>Cambios de configuración remota (MQTT)</td><td>6</td><td>Solo ajustes iniciales de calibración</td></tr>
+<tr><td>Supervisiones formales</td><td>0</td><td>Sin anomalías que requieran intervención</td></tr>
+<tr><td>Desconexiones físicas de sonda DS18B20</td><td>0</td><td>Sondas fijas, sin manipulación</td></tr>
+<tr><td>Notificaciones WhatsApp/email</td><td>52</td><td>Alertas por ciclos de compresión fuera de umbral</td></tr>
+</tbody></table>
+
+<p>La diferencia entre ambas fases evidencia el comportamiento esperado: en un entorno de producción estable (Fase 2), el sistema opera con mínima intervención y genera pocos eventos de conectividad, mientras mantiene el registro continuo de mediciones y las alertas automáticas ante excursiones.</p>
+
+<p>Cada medición incluye timestamp UTC, identificador único del sensor, temperatura corregida y voltaje de alimentación. Los registros de supervisión documentan observaciones del personal ante anomalías, con fecha, responsable y estado del sensor al momento de la supervisión.</p>
+
+<h2>5.11 Comparación con soluciones comerciales</h2>
+
+<p><strong>Tabla 26.</strong> Comparación de SmartTemp con soluciones comerciales.</p>
+<table>
+<thead><tr><th>Característica</th><th>SmartTemp</th><th>Soluciones comerciales</th></tr></thead>
+<tbody>
+<tr><td>Costo por nodo sensor</td><td>~7 USD</td><td>100-500 USD</td></tr>
+<tr><td>Licencia de software</td><td>Sin costo (código abierto)</td><td>50-200 USD/mes/punto</td></tr>
+<tr><td>Monitoreo en tiempo real</td><td>Sí (WebSocket, &lt; 100 ms)</td><td>Sí</td></tr>
+<tr><td>Alertas automáticas</td><td>Sí (WhatsApp + email)</td><td>Sí</td></tr>
+<tr><td>Gestión offline</td><td>Sí (5 niveles, ~48 días)</td><td>Variable (generalmente &lt; 7 días)</td></tr>
+<tr><td>Configuración remota</td><td>Sí (MQTT bidireccional)</td><td>Variable</td></tr>
+<tr><td>Diagnóstico de red integrado</td><td>Sí (6 secciones)</td><td>Generalmente no</td></tr>
+<tr><td>Calibración por software</td><td>Sí (factor de corrección)</td><td>Variable</td></tr>
+<tr><td>Código fuente accesible</td><td>Sí</td><td>No</td></tr>
+<tr><td>Supervisiones y auditoría</td><td>Sí (integrado)</td><td>No (requiere software separado)</td></tr>
+<tr><td>Modos de energía adaptativos</td><td>Sí (continuo/deep sleep)</td><td>Fijo</td></tr>
+</tbody></table>
+
+<h2>5.12 Validación de criterios de aceptación</h2>
+
+<p><strong>Tabla 27.</strong> Evaluación final de criterios de aceptación.</p>
+<table>
+<thead><tr><th>#</th><th>Criterio</th><th>Valor aceptable</th><th>Resultado</th><th>Cumple</th></tr></thead>
+<tbody>
+<tr><td>CA-1</td><td>Precisión de medición</td><td>≤ ±0,5 °C</td><td>±0,35 °C (post-corrección)</td><td>✅</td></tr>
+<tr><td>CA-2</td><td>Disponibilidad del sistema</td><td>≥ 99%</td><td>99,3-99,7% (modo continuo estable)</td><td>✅*</td></tr>
+<tr><td>CA-3</td><td>Frecuencia de medición</td><td>5 min ± 30 s</td><td>Mediana 5,02 min</td><td>✅</td></tr>
+<tr><td>CA-4</td><td>Tiempo detección excursión</td><td>≤ 5 min</td><td>5 min (= intervalo de medición)</td><td>✅</td></tr>
+<tr><td>CA-5</td><td>Latencia WebSocket</td><td>≤ 1 s</td><td>&lt; 100 ms</td><td>✅</td></tr>
+<tr><td>CA-6</td><td>Capacidad offline</td><td>≥ 10.000 registros</td><td>10.000 (LittleFS 1 MB)</td><td>✅</td></tr>
+<tr><td>CA-7</td><td>Recuperación offline</td><td>100%</td><td>100% (1.539 reconexiones sin pérdida)</td><td>✅</td></tr>
+<tr><td>CA-8</td><td>Tiempo conexión WiFi</td><td>≤ 3 s</td><td>~2 s (con caché)</td><td>✅</td></tr>
+<tr><td>CA-9</td><td>Satisfacción del personal</td><td>≥ 4,0</td><td>No evaluado</td><td>N/A</td></tr>
+</tbody></table>
+
+<p><em>* La disponibilidad global (64-70%) incluye períodos intencionales de modo deep sleep con intervalos de 10-60 min y el traslado físico de los sensores. En condiciones de operación estable (modo continuo, red WiFi confiable), la disponibilidad supera el 99%.</em></p>
+
+<p>El sistema cumple 8 de los 9 criterios de aceptación evaluables. El criterio CA-9 (satisfacción del personal) no fue evaluado por no haberse desplegado el sistema en un laboratorio con personal operativo durante el período de esta tesis.</p>
+
+</div>

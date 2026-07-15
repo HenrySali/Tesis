@@ -1,0 +1,111 @@
+<div class="page" id="anexo-b">
+  <section id="anexo-b">
+<h2>Anexo B: Diagramas de Flujo del Proceso y Arquitectura del Sistema</h2>
+<p>Diagramas de flujo de los procesos principales del sistema SmartTemp, esquema de base de datos y diagramas UML.</p>
+
+<h3>B.1 Flujo Principal: Adquisición y Visualización de Datos</h3>
+<p>Diagrama de flujo del proceso completo desde la lectura del sensor hasta la visualización en el dashboard.</p>
+<pre class="diagram">INICIO_CICLO_MEDICION</pre>
+
+<h3>B.2 Flujo de Alertas por Excursión de Temperatura</h3>
+<p>Proceso de detección y notificación cuando un sensor registra valores fuera de los umbrales configurados.</p>
+<pre class="diagram">NUEVA_MEDICION_RECIBIDA</pre>
+
+<h3>B.3 Flujo de Calibración de Sensores</h3>
+<p>Proceso de calibración comparando lecturas del sensor SmartTemp con un datalogger de referencia certificado.</p>
+<pre class="diagram">PROCESO_CALIBRACION</pre>
+
+<h3>B.4 Flujo de Reconexión y Datos Offline</h3>
+<p>Proceso de manejo de desconexiones WiFi y envío de datos almacenados localmente.</p>
+<pre class="diagram">PERDIDA_CONEXION_WIFI</pre>
+
+<h3>B.5 Esquema de Base de Datos MySQL</h3>
+<p>El sistema SmartTemp utiliza una base de datos MySQL con las siguientes tablas principales:</p>
+<table>
+  <thead><tr><th>Tabla</th><th>Función</th><th>Campos principales</th></tr></thead>
+  <tbody>
+    <tr><td>mediciones2</td><td>Datos de sensores</td><td>idsensor, temperatura, voltaje, timestamp</td></tr>
+    <tr><td>sensores</td><td>Configuración sensores</td><td>idsensor, nombre, ubicacion, activo</td></tr>
+    <tr><td>equipos</td><td>Equipos monitoreados</td><td>idequipo, nombre, tipo, sector</td></tr>
+    <tr><td>umbrales</td><td>Límites de temperatura</td><td>idsensor, temp_max, temp_min</td></tr>
+    <tr><td>supervisiones</td><td>Eventos y alertas</td><td>idsensor, tipo, timestamp, resuelto</td></tr>
+    <tr><td>usuarios</td><td>Autenticación</td><td>idusuario, username, password_hash</td></tr>
+  </tbody>
+</table>
+
+<h3>B.6 Flujo del Sensor Virtual / Simulador</h3>
+<p>Proceso del sensor virtual que emula el comportamiento del firmware ESP8266 en software, permitiendo pruebas sin hardware físico.</p>
+<pre class="diagram">DIAGRAMA_SIMULADOR</pre>
+
+<h3>B.7 Login y Redirección por Perfil</h3>
+<p>Proceso de autenticación y redirección según el rol del usuario, con detalle de permisos por perfil.</p>
+<pre class="diagram">DIAGRAMA_LOGIN_PERFILES</pre>
+
+<h3>B.8 Flujo de Comunicación WebSocket</h3>
+<p>Flujo simplificado de cómo el servidor distribuye los datos de temperatura a todos los navegadores conectados en tiempo real.</p>
+<pre class="diagram">DIAGRAMA_FLUJO_WEBSOCKET</pre>
+
+<h3>B.9 Sistema de Auditoría y Trazabilidad</h3>
+<p>Fuentes de evidencia que el sistema genera automáticamente para cumplimiento normativo (ANMAT, ISO 15189, BPL).</p>
+<pre class="diagram">DIAGRAMA_AUDITORIA</pre>
+
+<h3>B.10 Diagrama de Clases UML (Simplificado)</h3>
+<pre class="diagram">
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│    Sensor       │    │    Equipo       │    │   Medicion      │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ + idsensor      │    │ + idequipo      │    │ + idmedicion    │
+│ + nombre        │◄───┤ + nombre        │    │ + idsensor      │
+│ + ubicacion     │    │ + tipo          │    │ + temperatura   │
+│ + activo        │    │ + sector        │    │ + voltaje       │
+├─────────────────┤    └─────────────────┘    │ + timestamp     │
+│ + leerTemp()    │                           └─────────────────┘
+│ + enviarDatos() │                                    │
+└─────────────────┘                                    │
+         │                                             │
+         │ 1:N                                         │
+         ▼                                             │
+┌─────────────────┐    ┌─────────────────┐            │
+│   Supervision   │    │    Umbral       │            │
+├─────────────────┤    ├─────────────────┤            │
+│ + idsupervision │    │ + idumbral      │            │
+│ + idsensor      │    │ + idsensor      │◄───────────┘
+│ + tipo          │    │ + temp_max      │
+│ + timestamp     │    │ + temp_min      │
+│ + resuelto      │    │ + activo        │
+└─────────────────┘    └─────────────────┘
+</pre>
+
+<h3>B.11 Diagrama de Secuencia - Envío de Datos</h3>
+<pre class="diagram">
+ESP8266     WiFi      Servidor     MySQL      WebSocket    Dashboard
+   │         │           │           │           │            │
+   │ medir() │           │           │           │            │
+   │◄────────┤           │           │           │            │
+   │         │           │           │           │            │
+   │ MQTT publish        │           │           │            │
+   │─────────┼──────────►│           │           │            │
+   │         │           │ INSERT    │           │            │
+   │         │           │──────────►│           │            │
+   │         │           │           │ OK        │            │
+   │         │           │◄──────────┤           │            │
+   │         │           │           │           │            │
+   │         │           │ evaluar umbrales      │            │
+   │         │           │──────────►│           │            │
+   │         │           │◄──────────┤           │            │
+   │         │           │           │           │            │
+   │         │           │ broadcast datos       │            │
+   │         │           │──────────────────────►│            │
+   │         │           │           │           │ push data  │
+   │         │           │           │           │───────────►│
+   │         │           │           │           │            │
+   │         │           │           │           │  ¿alerta?  │
+   │         │           │ enviar correo         │            │
+   │         │           │──────────►│           │ notificar  │
+   │         │           │           │           │───────────►│
+   │         │ MQTT ACK  │           │           │            │
+   │◄────────┼───────────┤           │           │            │
+   │         │           │           │           │            │
+</pre>
+</section>
+</div>

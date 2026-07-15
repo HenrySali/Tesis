@@ -1,0 +1,56 @@
+<div class="page" id="anexo-i">
+  <section id="anexo-i">
+<h2>Anexo I: Guía de Configuración Avanzada</h2>
+<p>Guía completa para la instalación y configuración del sistema SmartTemp.</p>
+
+<h3>I.1 Requisitos del Sistema</h3>
+<table>
+  <thead><tr><th>Componente</th><th>Especificación</th></tr></thead>
+  <tbody>
+    <tr><td>Servidor</td><td>Node.js 16+, MySQL 8.0+, PM2</td></tr>
+    <tr><td>Hardware</td><td>ESP8266 NodeMCU, DS18B20, resistencias</td></tr>
+    <tr><td>Red</td><td>WiFi 2.4GHz, acceso a internet (opcional)</td></tr>
+    <tr><td>Navegador</td><td>Chrome 90+, Firefox 88+, Safari 14+</td></tr>
+  </tbody>
+</table>
+
+<h3>I.2 Instalación del Servidor</h3>
+<pre><code># 1. Clonar repositorio
+git clone https://github.com/usuario/smarttemp.git
+cd smarttemp
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Configurar base de datos
+mysql -u root -p < db-scripts/setup-db.js
+
+# 4. Configurar variables de entorno
+cp .env.example .env
+# Editar .env con credenciales MySQL
+
+# 5. Iniciar servidor
+npm start
+# o con PM2: pm2 start ecosystem.config.js</code></pre>
+
+<h3>I.3 Configuración de Sensores ESP8266</h3>
+<pre><code>// config.h - Configuración WiFi y servidor
+#define WIFI_SSID "NombreRed"
+#define WIFI_PASSWORD "ClaveRed"
+#define SERVER_HOST "192.168.1.100"
+#define SERVER_PORT 3000
+#define SENSOR_ID "28db3543d4e13c37"
+
+// Compilar y subir firmware
+// Arduino IDE: Herramientas > Placa > ESP8266 > NodeMCU 1.0</code></pre>
+
+<h3>I.4 Verificación de Funcionamiento</h3>
+<ul>
+  <li>Acceder a http://servidor:3000</li>
+  <li>Verificar conexión de sensores en dashboard</li>
+  <li>Configurar umbrales de temperatura</li>
+  <li>Probar alertas y notificaciones</li>
+  <li>Validar registro histórico de datos</li>
+</ul>
+</section>
+</div>

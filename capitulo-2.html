@@ -1,0 +1,199 @@
+<div class="page" id="capitulo-2">
+  <h1>2. Marco Teórico</h1>
+<p>En este capítulo se presentan los fundamentos teóricos y conceptuales que sustentan el desarrollo del sistema SmartTemp. Se abordan los conceptos de cadena de frío en laboratorios de biología molecular, el paradigma del Internet de las Cosas aplicado al ámbito de la salud, los protocolos de comunicación utilizados, las tecnologías de <em>hardware</em> y <em>software</em> seleccionadas, y el estado del arte en sistemas de monitoreo de temperatura.</p>
+<h2>2.1 Cadena de frío en laboratorios de biología molecular</h2>
+<h3>2.1.1 Definición y requisitos de temperatura</h3>
+<p>La cadena de frío se define como el conjunto de procedimientos logísticos y técnicos que garantizan el mantenimiento de un rango de temperatura controlado desde la producción hasta el uso final de un producto termosensible (OMS, 2015). En el contexto de un laboratorio de biología molecular, la cadena de frío abarca el almacenamiento de reactivos, muestras biológicas y kits diagnósticos en equipos de refrigeración y congelación que operan en rangos específicos según la naturaleza del material almacenado.</p>
+<p>Los rangos de temperatura requeridos varían según el tipo de reactivo o muestra:</p>
+<ul>
+<li><p><strong>Refrigeración (2 °C a 8 °C)</strong>: Reactivos de uso frecuente, soluciones <em>buffer</em>, medios de cultivo, algunos kits de diagnóstico rápido y reactivos de extracción de ácidos nucleicos.</p>
+</li>
+<li><p><strong>Congelación convencional (−15 °C a −25 °C)</strong>: Enzimas de restricción, polimerasas termoestables (como la <em>Taq</em> polimerasa), <em>primers</em> de oligonucleótidos, sondas marcadas con fluoróforos y kits de PCR. Estos reactivos son particularmente sensibles a los ciclos de congelación-descongelación, que pueden degradar su actividad enzimática de forma acumulativa (Sambrook &amp; Russell, 2001).</p>
+</li>
+<li><p><strong>Ultra-congelación (−70 °C a −86 °C)</strong>: Muestras biológicas para almacenamiento prolongado, ARN extraído, cultivos celulares, cepas de referencia y reactivos de alta sensibilidad.</p>
+</li>
+</ul>
+<h3>2.1.2 Consecuencias de las excursiones de temperatura</h3>
+<p>Una excursión de temperatura se produce cuando la temperatura de almacenamiento se desvía del rango especificado durante un período determinado. Las consecuencias en reactivos de biología molecular incluyen:</p>
+<ul>
+<li><p><strong>Degradación enzimática</strong>: Las enzimas utilizadas en técnicas de PCR, secuenciación y clonación pierden actividad catalítica cuando se exponen a temperaturas superiores a las especificadas. Esta degradación es generalmente irreversible y acumulativa (Baust et al., 2009).</p>
+</li>
+<li><p><strong>Desnaturalización de <em>primers</em> y sondas</strong>: Los oligonucleótidos sintéticos pueden sufrir hidrólisis y pérdida de especificidad cuando se almacenan fuera de rango, lo que se traduce en amplificaciones inespecíficas o ausencia de amplificación en ensayos de PCR.</p>
+</li>
+<li><p><strong>Pérdida de integridad de ácidos nucleicos</strong>: El ARN es particularmente lábil y se degrada rápidamente a temperaturas superiores a −20 °C por acción de ribonucleasas (RNasas) ubicuas. La pérdida de integridad del ARN compromete los resultados de técnicas como RT-PCR y secuenciación de nueva generación (NGS).</p>
+</li>
+<li><p><strong>Impacto económico</strong>: Un kit de PCR en tiempo real puede superar los USD 500, y un lote de enzimas de alta fidelidad puede alcanzar valores similares. Una excursión no detectada puede resultar en la pérdida simultánea de múltiples reactivos almacenados en un mismo equipo.</p>
+</li>
+</ul>
+<h3>2.1.3 Marco normativo aplicable</h3>
+<p>El monitoreo de la cadena de frío en laboratorios de diagnóstico está regulado por diversas normativas nacionales e internacionales:</p>
+<p><strong>ANMAT — Disposición 2819/2004</strong>: La Administración Nacional de Medicamentos, Alimentos y Tecnología Médica establece los requisitos de habilitación y funcionamiento para laboratorios de análisis clínicos en Argentina. La disposición exige el control y registro de las condiciones ambientales que puedan afectar la calidad de los resultados, incluyendo la temperatura de almacenamiento de reactivos y muestras.</p>
+<p><strong>ISO 15189:2012 — Laboratorios clínicos</strong>: Esta norma internacional especifica los requisitos de calidad y competencia para laboratorios clínicos. En su apartado 5.3 (<em>Instalaciones y condiciones ambientales</em>), establece que el laboratorio debe monitorear, controlar y registrar las condiciones ambientales según lo requieran las especificaciones pertinentes.</p>
+<p><strong>Buenas Prácticas de Laboratorio (BPL)</strong>: Las BPL, adoptadas por la OCDE y referenciadas por ANMAT, requieren que los laboratorios mantengan registros documentados de las condiciones de almacenamiento de materiales de ensayo y de referencia, con trazabilidad suficiente para demostrar el cumplimiento ante auditorías.</p>
+<p><strong>CDC — <em>Guidelines for Specimen Handling and Storage</em></strong>: Los Centros para el Control y la Prevención de Enfermedades de Estados Unidos publican guías específicas para el manejo y almacenamiento de especímenes biológicos, que incluyen recomendaciones sobre rangos de temperatura, frecuencia de monitoreo y procedimientos ante excursiones (CDC, 2019).</p>
+<h2>2.2 Internet de las Cosas (IoT) aplicado a salud</h2>
+<h3>2.2.1 Concepto y arquitectura de referencia</h3>
+<p>El <em>Internet de las Cosas</em> (IoT, por sus siglas en inglés) se refiere al paradigma tecnológico en el cual objetos físicos dotados de sensores, capacidad de procesamiento y conectividad de red se integran en una infraestructura digital que permite la recolección, transmisión y análisis de datos de forma automatizada (Atzori et al., 2010). A diferencia de los sistemas de adquisición de datos tradicionales, los dispositivos IoT operan de forma autónoma, con capacidad de comunicación bidireccional y, en muchos casos, con mecanismos de almacenamiento local para operar ante pérdida de conectividad.</p>
+<p>La arquitectura de referencia IoT más ampliamente adoptada en la literatura académica es el modelo de tres capas propuesto por Al-Fuqaha et al. (2015):</p>
+<ol>
+<li><p><strong>Capa de percepción</strong> (<em>Perception Layer</em>): Comprende los dispositivos físicos —sensores y actuadores— que interactúan con el entorno. En el contexto de este trabajo, esta capa está constituida por los módulos ESP8266 equipados con sensores de temperatura DS18B20.</p>
+</li>
+<li><p><strong>Capa de red</strong> (<em>Network Layer</em>): Responsable de la transmisión de datos entre los dispositivos de percepción y la infraestructura de procesamiento. Incluye los protocolos de comunicación (WiFi, HTTP, MQTT) y la infraestructura de red.</p>
+</li>
+<li><p><strong>Capa de aplicación</strong> (<em>Application Layer</em>): Proporciona los servicios al usuario final. En este trabajo, comprende el servidor <em>backend</em>, la base de datos y la interfaz web de visualización y gestión.</p>
+</li>
+</ol>
+<h3>2.2.2 IoT en entornos de laboratorio y salud</h3>
+<p>La aplicación de IoT en el ámbito de la salud —denominada <em>IoT Healthcare</em> o <em>IoMT</em> (<em>Internet of Medical Things</em>)— ha experimentado un crecimiento significativo en la última década (Baker et al., 2017). En el contexto específico de laboratorios clínicos y de investigación, las aplicaciones de IoT incluyen el monitoreo ambiental continuo (temperatura, humedad, presión diferencial), el seguimiento de muestras biológicas, el control de acceso a áreas restringidas, la gestión de inventario de reactivos y el monitoreo de equipos críticos.</p>
+<p>El monitoreo de la cadena de frío mediante IoT presenta ventajas específicas frente al registro manual: operación ininterrumpida 24/7, generación automática de alertas, registro digital con <em>timestamps</em> precisos, y capacidad de análisis histórico para identificar patrones de falla en equipos (Montanari et al., 2018).</p>
+<h2>2.3 Protocolos de comunicación</h2>
+<p>El sistema SmartTemp utiliza tres protocolos de comunicación complementarios, cada uno seleccionado por sus características específicas para la función que desempeña en la arquitectura.</p>
+<h3>2.3.1 HTTP (<em>Hypertext Transfer Protocol</em>)</h3>
+<p>HTTP es un protocolo de la capa de aplicación del modelo TCP/IP, basado en el paradigma solicitud-respuesta (<em>request-response</em>). En el sistema SmartTemp, HTTP se utiliza para el envío de datos desde los sensores al servidor mediante solicitudes POST, y para la comunicación entre el <em>frontend</em> web y la API REST del <em>backend</em>.</p>
+<p>La elección de HTTP para el envío de datos del sensor se fundamenta en su universalidad, simplicidad de implementación en microcontroladores y compatibilidad con la infraestructura de red existente. Cada medición se envía como un objeto JSON en el cuerpo de una solicitud POST al <em>endpoint</em> <code>/data</code> del servidor.</p>
+<h3>2.3.2 MQTT (<em>Message Queuing Telemetry Transport</em>)</h3>
+<p>MQTT es un protocolo de mensajería ligero basado en el paradigma publicación/suscripción (<em>publish/subscribe</em>), diseñado específicamente para dispositivos con recursos limitados y redes de ancho de banda reducido (OASIS, 2019). A diferencia de HTTP, donde el cliente siempre inicia la comunicación, MQTT permite que el servidor envíe mensajes a los dispositivos en cualquier momento a través de un intermediario denominado <em>broker</em>.</p>
+<p>La arquitectura MQTT se compone de tres elementos:</p>
+<ul>
+<li><strong>Publicador</strong> (<em>Publisher</em>): Envía mensajes a un <em>topic</em> (canal temático).</li>
+<li><strong>Suscriptor</strong> (<em>Subscriber</em>): Se registra en uno o más <em>topics</em> para recibir mensajes.</li>
+<li><strong>Broker</strong>: Intermediario que recibe los mensajes de los publicadores y los distribuye a los suscriptores correspondientes. En este trabajo se utiliza Mosquitto, un <em>broker</em> MQTT de código abierto.</li>
+</ul>
+<p>Las características de MQTT que lo hacen adecuado para IoT incluyen: cabecera mínima de 2 bytes (frente a los cientos de bytes de HTTP), soporte de tres niveles de calidad de servicio (QoS 0, 1 y 2), mecanismo de <em>Last Will and Testament</em> para detección de desconexiones, y bajo consumo de recursos en el cliente.</p>
+<p>En el sistema SmartTemp, MQTT se utiliza para la comunicación bidireccional servidor-sensor: envío de solicitudes de <em>ping</em> remoto para verificar conectividad, configuración remota de intervalos de medición, y confirmación de recepción de comandos (ACK). Los <em>topics</em> utilizados siguen una estructura jerárquica: <code>sensores/ping/request</code>, <code>sensores/ping/response</code>, <code>sensores/config/{sensorId}</code> y <code>sensores/config/ack</code>.</p>
+<h3>2.3.3 WebSocket</h3>
+<p>WebSocket es un protocolo de comunicación <em>full-duplex</em> sobre una única conexión TCP, estandarizado en el RFC 6455 (Fette &amp; Melnikov, 2011). A diferencia de HTTP, que requiere una nueva conexión para cada intercambio de datos, WebSocket establece una conexión persistente que permite el envío bidireccional de mensajes con latencia mínima.</p>
+<p>En el sistema SmartTemp, WebSocket se utiliza para la actualización en tiempo real de la interfaz web. Cuando el servidor recibe una nueva medición de un sensor, la reenvía inmediatamente a todos los clientes web conectados, sin necesidad de que el navegador realice consultas periódicas (<em>polling</em>).</p>
+<p><strong>Tabla 1.</strong> Comparación de protocolos de comunicación utilizados en SmartTemp.</p>
+<table>
+<thead>
+<tr>
+<th>Característica</th>
+<th>HTTP</th>
+<th>MQTT</th>
+<th>WebSocket</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Paradigma</td>
+<td>Solicitud-respuesta</td>
+<td>Publicación/suscripción</td>
+<td><em>Full-duplex</em></td>
+</tr>
+<tr>
+<td>Dirección</td>
+<td>Cliente → Servidor</td>
+<td>Bidireccional (vía <em>broker</em>)</td>
+<td>Bidireccional</td>
+</tr>
+<tr>
+<td><em>Overhead</em> de cabecera</td>
+<td>Alto (~200-800 bytes)</td>
+<td>Mínimo (2 bytes)</td>
+<td>Bajo (~2-14 bytes)</td>
+</tr>
+<tr>
+<td>Conexión</td>
+<td>Nueva por cada solicitud</td>
+<td>Persistente</td>
+<td>Persistente</td>
+</tr>
+<tr>
+<td>Uso en SmartTemp</td>
+<td>Envío de datos sensor→servidor, API REST</td>
+<td><em>Ping</em> remoto, configuración de sensores</td>
+<td>Actualización en tiempo real del <em>frontend</em></td>
+</tr>
+</tbody></table>
+<h2>2.4 Tecnologías de <em>hardware</em></h2>
+<h3>2.4.1 Microcontrolador ESP8266</h3>
+<p>El ESP8266 es un <em>System-on-Chip</em> (SoC) fabricado por Espressif Systems que integra un procesador Tensilica L106 de 32 bits a 80/160 MHz, 80 KB de RAM de datos, 64 KB de RAM de instrucciones y un módulo WiFi 802.11 b/g/n en un único encapsulado (Espressif Systems, 2020). Su costo reducido (~2 USD por unidad) y su bajo consumo en modo <em>deep sleep</em> (~20 µA) lo posicionan como una de las plataformas más utilizadas en proyectos IoT de bajo costo.</p>
+<p>Las características del ESP8266 relevantes para este trabajo incluyen:</p>
+<ul>
+<li><p><strong>Conectividad WiFi integrada</strong>: Soporte de los estándares 802.11 b/g/n en la banda de 2,4 GHz, con capacidad de operar como estación (STA) o punto de acceso (AP).</p>
+</li>
+<li><p><strong>Modos de operación de bajo consumo</strong>: El modo <em>deep sleep</em> reduce el consumo a ~20 µA, permitiendo la operación con batería durante períodos prolongados. En este modo, el procesador y el módulo WiFi se apagan, conservando únicamente la memoria RTC de 512 bytes.</p>
+</li>
+<li><p><strong>Sistema de archivos LittleFS</strong>: La memoria Flash de 4 MB puede particionarse para alojar LittleFS (<em>Little Fail-Safe File System</em>), un sistema de archivos con <em>wear leveling</em> integrado que distribuye las escrituras de forma uniforme para maximizar la vida útil de la memoria.</p>
+</li>
+<li><p><strong>EEPROM emulada</strong>: Un sector de la memoria Flash se utiliza para emular una EEPROM de 4 KB, adecuada para almacenar configuraciones persistentes.</p>
+</li>
+<li><p><strong>Memoria RTC</strong>: 512 bytes de memoria que sobreviven al modo <em>deep sleep</em>, utilizados para almacenar <em>timestamps</em> y contadores entre ciclos de bajo consumo.</p>
+</li>
+</ul>
+<h3>2.4.2 Sensor de temperatura DS18B20</h3>
+<p>El DS18B20 es un sensor de temperatura digital fabricado por Maxim Integrated que utiliza el protocolo de comunicación <em>OneWire</em>, requiriendo un único pin de datos para la comunicación con el microcontrolador (Maxim Integrated, 2019).</p>
+<p>Sus especificaciones técnicas relevantes son:</p>
+<ul>
+<li><strong>Rango de medición</strong>: −55 °C a +125 °C, cubriendo todos los rangos de temperatura requeridos en un laboratorio de biología molecular.</li>
+<li><strong>Precisión</strong>: ±0,5 °C en el rango de −10 °C a +85 °C (sin calibración).</li>
+<li><strong>Resolución configurable</strong>: 9 a 12 bits, correspondientes a incrementos de 0,5 °C a 0,0625 °C. En este trabajo se utiliza la resolución máxima de 12 bits.</li>
+<li><strong>Identificador único de 64 bits</strong>: Cada sensor posee un código ROM único grabado de fábrica, lo que permite identificar de forma inequívoca cada sensor en la red.</li>
+<li><strong>Tiempo de conversión</strong>: 750 ms a resolución de 12 bits.</li>
+</ul>
+<p>La elección del DS18B20 frente a otras alternativas —como el sensor analógico PT100 mencionado en el anteproyecto de este trabajo— se fundamenta en: (i) el protocolo digital <em>OneWire</em> elimina la necesidad de conversores analógico-digital externos y reduce la susceptibilidad al ruido eléctrico; (ii) el identificador único de 64 bits simplifica la gestión de múltiples sensores; (iii) su costo es significativamente inferior al de un sistema PT100 con su electrónica de acondicionamiento asociada; y (iv) su rango de operación (−55 °C a +125 °C) cubre todas las necesidades del laboratorio, incluyendo ultra<em>freezers</em>.</p>
+<h2>2.5 Tecnologías de <em>software</em></h2>
+<h3>2.5.1 Node.js y Express</h3>
+<p>Node.js es un entorno de ejecución de JavaScript del lado del servidor, construido sobre el motor V8 de Google Chrome. Su arquitectura basada en un bucle de eventos (<em>event loop</em>) no bloqueante lo hace particularmente adecuado para aplicaciones IoT que deben manejar múltiples conexiones concurrentes de sensores con baja latencia (Tilkov &amp; Vinoski, 2010).</p>
+<p>Express es un <em>framework</em> minimalista para Node.js que proporciona una capa de abstracción para la creación de servidores HTTP y APIs REST. Su sistema de <em>middleware</em> permite encadenar funciones de procesamiento de solicitudes de forma modular.</p>
+<h3>2.5.2 MySQL</h3>
+<p>MySQL es un sistema de gestión de bases de datos relacional de código abierto. En el contexto de SmartTemp, MySQL almacena las mediciones de temperatura, la configuración de sensores, los umbrales de alerta, los registros de supervisión y la información de usuarios.</p>
+<p>La elección de MySQL se fundamenta en su soporte de transacciones ACID (<em>Atomicity, Consistency, Isolation, Durability</em>), su capacidad de indexación para consultas eficientes sobre grandes volúmenes de datos temporales, y su compatibilidad con el <em>pool</em> de conexiones implementado en el <em>backend</em> para optimizar el uso de recursos.</p>
+<h3>2.5.3 Chart.js</h3>
+<p>Chart.js es una biblioteca de JavaScript de código abierto para la creación de gráficos interactivos en el navegador web, basada en el elemento HTML5 <em>Canvas</em>. En SmartTemp se utiliza para la visualización de datos históricos de temperatura y voltaje, permitiendo al usuario observar tendencias, identificar excursiones y analizar el comportamiento de los equipos de frío a lo largo del tiempo.</p>
+<h3>2.5.4 PM2</h3>
+<p>PM2 es un gestor de procesos para aplicaciones Node.js en entornos de producción. Proporciona funcionalidades de reinicio automático ante fallos, balanceo de carga, monitoreo de recursos y gestión de <em>logs</em>. En SmartTemp, PM2 garantiza la disponibilidad continua del servidor, reiniciándolo automáticamente en caso de errores no controlados.</p>
+<h2>2.6 Estado del arte</h2>
+<h3>2.6.1 Sistemas comerciales de monitoreo de cadena de frío</h3>
+<p>Existen en el mercado diversas soluciones comerciales para el monitoreo de la cadena de frío en laboratorios y entornos de salud. Entre las más difundidas se encuentran los sistemas de Elpro (Libero), Testo (Saveris), Dickson y Vaisala, que ofrecen sensores certificados, plataformas en la nube y cumplimiento normativo. Sin embargo, estas soluciones presentan costos elevados —tanto en la adquisición inicial del <em>hardware</em> como en las licencias recurrentes de <em>software</em>— que pueden resultar prohibitivos para laboratorios de pequeña y mediana escala en el contexto argentino.</p>
+<h3>2.6.2 Trabajos académicos relacionados</h3>
+<p>La literatura académica registra diversos trabajos que abordan el monitoreo de temperatura mediante IoT en entornos de salud y laboratorio.</p>
+
+<p>Ramírez-Faz et al. (2020) implementaron un sistema de monitoreo IoT basado en ESP8266 y DS18B20 para 75 tiendas en España, utilizando ThingSpeak como plataforma en la nube. Si bien el sistema demostró viabilidad a escala, carece de gestión offline y de validación metrológica con patrones certificados.</p>
+
+<p>Hasanat et al. (2020) desarrollaron un sistema de monitoreo de cadena de frío para vacunas basado en Arduino Mega + ESP8266, con alertas SMS. El sistema cumple lineamientos de la OMS pero no implementa comunicación bidireccional ni almacenamiento local ante cortes de conectividad.</p>
+
+<p>Sarkar et al. (2022) propusieron un sistema con ESP32 y MQTT para cadena de suministro en frío, utilizando una arquitectura de 7 capas. Si bien incorpora MQTT, no reporta validación metrológica formal ni gestión offline.</p>
+
+<p>Pires et al. (2025) diseñaron un sistema BLE de bajo consumo con sensores Si7020, reportando un error medio de -0,36 °C y error absoluto de 0,47 °C frente a un termómetro calibrado. La validación es limitada a un período breve y no incluye análisis de concordancia formal.</p>
+
+<p>Rodríguez-Rama et al. (2025) publicaron una validación metrológica exhaustiva de sensores DS18B20 utilizando el procedimiento TH-001 del Centro Español de Metrología, con sondas Pt-100 calibradas en baño termostático. Reportan un error medio absoluto (MAE) post-corrección de 0,046 a 0,130 °C y RMSE de 0,057 a 0,169 °C, confirmando la idoneidad del DS18B20 para redes de monitoreo con calibración por software.</p>
+
+<p>Nabão et al. (2025) presentaron una revisión de arquitecturas IoT para monitoreo de temperatura en sistemas críticos, evaluando tecnologías ESP-MESH, MQTT, BLE y LoRaWAN. El prototipo descrito incluye un gateway Raspberry Pi con buffer local, aunque la validación se limita a 24 horas de operación.</p>
+
+<p>Bose et al. (2022) implementaron un sistema de monitoreo de vacunas basado en LoRaWAN, adecuado para áreas sin cobertura WiFi pero con latencia elevada y sin gestión offline en el nodo sensor.</p>
+
+<p><strong>Tabla 7.</strong> Comparación de SmartTemp con sistemas de monitoreo IoT publicados.</p>
+<table>
+<thead>
+<tr><th>Característica</th><th>Ramírez-Faz (2020)</th><th>Pires (2025)</th><th>Rodríguez-Rama (2025)</th><th>Nabão (2025)</th><th><strong>SmartTemp</strong></th></tr>
+</thead>
+<tbody>
+<tr><td>Sensor</td><td>DS18B20</td><td>Si7020</td><td>DS18B20</td><td>DS18B20</td><td><strong>DS18B20</strong></td></tr>
+<tr><td>MCU</td><td>ESP8266</td><td>HY0020 SoC</td><td>—</td><td>ESP32</td><td><strong>ESP8266</strong></td></tr>
+<tr><td>Protocolo</td><td>HTTP (ThingSpeak)</td><td>BLE</td><td>—</td><td>MQTT + ESP-MESH</td><td><strong>HTTP + MQTT</strong></td></tr>
+<tr><td>Gestión offline</td><td>No</td><td>Parcial</td><td>—</td><td>Sí (gateway)</td><td><strong>Sí (5 niveles, ~48 días)</strong></td></tr>
+<tr><td>Validación metrológica</td><td>No formal</td><td>Error medio -0,36 °C</td><td>MAE 0,046-0,130 °C</td><td>Funcional (24h)</td><td><strong>Bland-Altman + ICC, 113 días</strong></td></tr>
+<tr><td>Alertas tiempo real</td><td>ThingSpeak</td><td>Limitadas</td><td>—</td><td>Sí</td><td><strong>WhatsApp + email + WebSocket</strong></td></tr>
+<tr><td>Normativa</td><td>UE alimentaria</td><td>—</td><td>SI, GUM, EA-4/02</td><td>—</td><td><strong>ISO 15189 + ANMAT + BPL</strong></td></tr>
+<tr><td>Config. remota</td><td>No</td><td>No</td><td>—</td><td>No</td><td><strong>Sí (MQTT bidireccional)</strong></td></tr>
+<tr><td>Período evaluación</td><td>No reportado</td><td>Breve</td><td>Laboratorio controlado</td><td>24 h</td><td><strong>113 días, 49.708 mediciones</strong></td></tr>
+<tr><td>Costo por nodo</td><td>~30 EUR</td><td>No reportado</td><td>~10 EUR</td><td>No reportado</td><td><strong>~7 USD</strong></td></tr>
+</tbody>
+</table>
+
+<p>SmartTemp se diferencia de los trabajos previos en tres aspectos principales: (a) la implementación completa de gestión offline con 5 niveles de respaldo de timestamp y sincronización retroactiva, funcionalidad no encontrada en ningún sistema publicado; (b) la validación metrológica mediante análisis de Bland-Altman e ICC durante 113 días de operación continua, metodología no aplicada previamente en este campo; y (c) la comunicación bidireccional MQTT para diagnóstico remoto y configuración sin acceso físico, combinada con un sistema de alertas multi-canal (WhatsApp + email) con fallback automático.</p>
+<h3>2.6.3 Ventajas de una solución IoT de bajo costo</h3>
+<p>Frente a las soluciones comerciales, un sistema IoT de bajo costo basado en componentes de código abierto presenta las siguientes ventajas: (i) costo de <em>hardware</em> por punto de monitoreo significativamente inferior; (ii) ausencia de licencias recurrentes de <em>software</em>; (iii) personalización completa del sistema según las necesidades específicas del laboratorio; (iv) independencia de proveedores externos para el mantenimiento y la evolución del sistema; y (v) posibilidad de integración con sistemas existentes mediante APIs abiertas.</p>
+<p>Como contrapartida, las soluciones de bajo costo requieren mayor esfuerzo de desarrollo, no cuentan con certificaciones de fábrica para los sensores (aunque pueden calibrarse <em>in situ</em>), y la responsabilidad del mantenimiento recae en el propio laboratorio o institución.</p>
+
+<h2>2.7 Metodologías de desarrollo de sistemas IoT</h2>
+<h3>2.7.1 Desafíos específicos del desarrollo IoT</h3>
+<p>El desarrollo de sistemas IoT presenta características únicas que lo diferencian del desarrollo de <em>software</em> tradicional. Según Mineraud et al. (2016), los principales desafíos incluyen: heterogeneidad de componentes (<em>hardware</em>, <em>firmware</em>, <em>software</em> de servidor y aplicaciones web), conectividad intermitente, restricciones de recursos en dispositivos embebidos, escalabilidad y necesidad de interoperabilidad entre protocolos.</p>
+<h3>2.7.2 Metodologías tradicionales vs. ágiles</h3>
+<p>La metodología en cascada (Royce, 1970) proporciona estructura y documentación exhaustiva, pero presenta rigidez ante cambios de requisitos y detección tardía de problemas de integración <em>hardware-software</em>. Las metodologías ágiles (Beck et al., 2001) priorizan la adaptabilidad, pero su enfoque centrado en <em>software</em> y sus <em>sprints</em> cortos pueden ser incompatibles con los tiempos de prototipado y pruebas de <em>hardware</em>.</p>
+<h3>2.7.3 Metodología iterativa e incremental para IoT</h3>
+<p>La metodología iterativa e incremental combina las ventajas de ambos enfoques (Larman &amp; Basili, 2003). El desarrollo iterativo permite ciclos repetitivos de análisis, diseño, implementación y pruebas con refinamiento progresivo. El desarrollo incremental entrega funcionalidad por partes, permitiendo validación temprana con usuarios e integración continua con componentes existentes.</p>
+<p>Para sistemas IoT, esta metodología presenta ventajas específicas: integración gradual de <em>hardware</em>, <em>firmware</em> y <em>software</em>; pruebas tempranas de cada capa de la arquitectura; detección temprana de incompatibilidades; y flexibilidad para incorporar requisitos emergentes del entorno real de operación (Patel &amp; Cassou, 2015).</p>
+
+</div>

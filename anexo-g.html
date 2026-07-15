@@ -1,0 +1,44 @@
+<div class="page" id="anexo-g">
+  <section id="anexo-g">
+<h2>Anexo G: Manual de Instalación y Configuración</h2>
+<p>Guía de instalación del sistema SmartTemp: servidor Node.js, broker MQTT, MySQL y sensores ESP8266.</p>
+<h3>Despliegue e Instalación del Servidor</h3>
+<h3>Despliegue e Instalación del Sistema</h3>
+<p>&gt; Instalación, configuración de entornos, gestión de procesos con PM2, sistema de logs y despliegue en producción.</p>
+<p>---</p>
+<h4>Descripción General</h4>
+<p>SmartTemp opera en dos entornos: desarrollo local (red del laboratorio) y producción (servidor remoto accesible desde internet). El despliegue en producción utiliza PM2 como gestor de procesos para garantizar disponibilidad continua, con auto-restart ante fallos y gestión de logs.</p>
+<p>La estrategia de despliegue sigue las mejores prácticas para aplicaciones Node.js en producción: separación de configuración por entorno (variables de entorno con dotenv), gestión de procesos con PM2 (equivalente a systemd para Node.js), y monitoreo de recursos. PM2 es el gestor de procesos más utilizado para Node.js en producción, con más de 40 millones de descargas mensuales en npm.</p>
+<h4>Funcionamiento</h4>
+<h5>Entornos del sistema</h5>
+<p>| Entorno | IP | Puerto | Uso |</p>
+<p>|---------|-----|--------|-----|</p>
+<p>| Desarrollo | 192.168.1.24 | 8055 | Pruebas en red local del laboratorio |</p>
+<p>| Producción | 149.50.137.2 | 8055 | Servidor accesible desde internet |</p>
+<p class="note">Contenido resumido. Ver documentación completa en el repositorio del proyecto.</p><h3>Configuración del Broker MQTT</h3>
+<h3>Sistema MQTT</h3>
+<p>&gt; Comunicación bidireccional entre servidor y sensores ESP8266 mediante el protocolo MQTT: ping remoto, configuración de intervalos y broker Mosquitto.</p>
+<p>---</p>
+<h4>Descripción General</h4>
+<p>MQTT (Message Queuing Telemetry Transport) es el protocolo que permite al servidor comunicarse con los sensores ESP8266 de forma bidireccional, incluso cuando los sensores no son accesibles directamente por red HTTP. Fue creado por IBM en 1999 y estandarizado por OASIS en 2014, convirtiéndose en el estándar de facto para comunicación IoT.</p>
+<p>A diferencia de HTTP (modelo petición-respuesta donde el cliente siempre inicia), MQTT usa un modelo de publicación/suscripción con un intermediario (broker). Esto permite que el servidor envíe comandos a los sensores en cualquier momento sin que estos tengan que estar &quot;escuchando&quot; peticiones HTTP. El overhead del protocolo es mínimo (cabecera de 2 bytes vs ~700 bytes de HTTP), lo que lo hace ideal para dispositivos con recursos limitados como el ESP8266.</p>
+<p>SmartTemp usa MQTT para tres funciones que no son posibles con HTTP:</p>
+<p>1. **Ping remoto**: Verificar si un sensor está activo</p>
+<p>2. **Configuración remota**: Cambiar intervalos de envío sin acceso físico</p>
+<p>3. **Comunicación bidireccional**: El servidor puede enviar comandos a los sensores</p>
+<h4>Funcionamiento</h4>
+<h5>Arquitectura MQTT</h5>
+<p class="note">Contenido resumido. Ver documentación completa en el repositorio del proyecto.</p><h3>Autenticación y Seguridad</h3>
+<h3>Sistema de Autenticación y Login</h3>
+<p>&gt; Proceso de inicio de sesión, gestión de sesiones en el navegador, roles de usuario y registro de historial de accesos.</p>
+<p>---</p>
+<h4>Descripción General</h4>
+<p>SmartTemp implementa un sistema de autenticación basado en sesiones del lado del cliente (localStorage/sessionStorage) con verificación de credenciales contra la base de datos MySQL. El sistema soporta múltiples roles con diferentes niveles de acceso y registra un historial completo de inicios de sesión para auditoría.</p>
+<p>La autenticación es un componente crítico en sistemas IoT de monitoreo, ya que controla quién puede visualizar datos sensibles de la cadena de frío y quién puede modificar configuraciones de los sensores. En el contexto de la norma ISO 15189 para laboratorios clínicos, la trazabilidad de accesos es un requisito para acreditación.</p>
+<p>La página de login es el punto de entrada principal del sistema, accesible desde la raíz del servidor (`/index.html`).</p>
+<h4>Funcionamiento</h4>
+<h5>Proceso de autenticación</h5>
+<p>1. Al abrir la página de login, el sistema carga la lista de usuarios desde `GET /api/users`</p>
+<p>2. El usuario ingresa correo electrónico y contraseña</p>
+<p class="note">Contenido resumido. Ver documentación completa en el repositorio del proyecto.</p></section>
+</div>

@@ -1,0 +1,246 @@
+<div class="page" id="capitulo-3">
+  <h1>3. Marco Metodológico</h1>
+<p>En este capítulo se describe el enfoque metodológico adoptado para el desarrollo, la implementación y la evaluación del sistema SmartTemp. Se detallan el tipo de estudio, la población y muestra, los materiales utilizados, la metodología de desarrollo, los instrumentos de recolección de datos y los criterios de aceptación.</p>
+<h2>3.1 Tipo de estudio</h2>
+<p>El presente trabajo se enmarca en un estudio de tipo aplicado, con un enfoque mixto que combina elementos de desarrollo tecnológico y evaluación empírica.</p>
+<p>Desde la perspectiva del desarrollo, se trata de un proyecto de ingeniería que abarca el diseño, la implementación y la puesta en producción de un sistema IoT completo, incluyendo <em>hardware</em> (sensores), <em>firmware</em> (código embebido), <em>software</em> (servidor y plataforma web) y base de datos.</p>
+<p>Desde la perspectiva de la evaluación, el estudio es de tipo descriptivo y cuantitativo: se recolectan datos de desempeño del sistema en condiciones reales de operación y se comparan con los criterios de aceptación definidos previamente.</p>
+<p>El alcance temporal del estudio es longitudinal, dado que la evaluación del sistema se realiza durante un período continuo de operación en el laboratorio, lo que permite observar el comportamiento ante diferentes condiciones (variaciones de carga de red, cortes de energía, fallas de equipos de frío, cambios de temperatura ambiente).</p>
+<h2>3.2 Población y muestra</h2>
+<p>La población del estudio está constituida por los equipos de almacenamiento en frío del laboratorio de biología molecular Limay Biosciences. Estos equipos incluyen:</p>
+<ul>
+<li>Heladeras de laboratorio (rango operativo: 2 °C a 8 °C)</li>
+<li><em>Freezers</em> convencionales (rango operativo: −15 °C a −25 °C)</li>
+<li>Ultra<em>freezers</em> (rango operativo: −70 °C a −86 °C)</li>
+</ul>
+<p>La muestra corresponde a la totalidad de los equipos de frío del laboratorio instrumentados con sensores del sistema SmartTemp. Dado que el objetivo es el monitoreo integral de la cadena de frío, se optó por un muestreo censal: todos los equipos de frío fueron incluidos.</p>
+<p>Adicionalmente, la población secundaria incluye al personal del laboratorio que interactúa con el sistema (operadores, supervisores, responsables de calidad), cuya percepción se evalúa mediante encuestas.</p>
+<h2>3.3 Materiales</h2>
+<h3>3.3.1 <em>Hardware</em></h3>
+<p><strong>Tabla 2.</strong> Materiales de <em>hardware</em> utilizados en el sistema SmartTemp.</p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Especificación</th>
+<th>Cantidad</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ESP8266 NodeMCU</td>
+<td>SoC WiFi 802.11 b/g/n, 80 MHz, 4 MB Flash</td>
+<td>1 por equipo</td>
+<td>Microcontrolador con conectividad inalámbrica</td>
+</tr>
+<tr>
+<td>DS18B20</td>
+<td>Sensor digital, OneWire, ±0,5 °C, −55 a +125 °C</td>
+<td>1 por equipo</td>
+<td>Medición de temperatura</td>
+</tr>
+<tr>
+<td>Resistencia 4,7 kΩ</td>
+<td>Pull-up para bus OneWire</td>
+<td>1 por sensor</td>
+<td>Acondicionamiento de señal</td>
+</tr>
+<tr>
+<td>Divisor de voltaje</td>
+<td>Resistencias para lectura en pin A0</td>
+<td>1 por módulo</td>
+<td>Medición de voltaje de alimentación</td>
+</tr>
+<tr>
+<td>Fuente de alimentación</td>
+<td>5V / 1A, micro-USB</td>
+<td>1 por módulo</td>
+<td>Alimentación del ESP8266</td>
+</tr>
+</tbody></table>
+<h3>3.3.2 Infraestructura de red</h3>
+<p><strong>Tabla 3.</strong> Infraestructura de red del sistema SmartTemp.</p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Especificación</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Router WiFi</td>
+<td>802.11 b/g/n, 2,4 GHz</td>
+<td>Punto de acceso principal</td>
+</tr>
+<tr>
+<td>Repetidoras WiFi</td>
+<td>802.11 b/g/n, 2,4 GHz</td>
+<td>Extensión de cobertura en el laboratorio</td>
+</tr>
+<tr>
+<td>Servidor</td>
+<td>VPS Linux, acceso remoto</td>
+<td>Alojamiento del <em>backend</em>, BD y <em>broker</em> MQTT</td>
+</tr>
+<tr>
+<td>Broker MQTT</td>
+<td>Mosquitto, puerto 1883</td>
+<td>Intermediario para comunicación bidireccional</td>
+</tr>
+</tbody></table>
+<h3>3.3.3 <em>Software</em></h3>
+<p><strong>Tabla 4.</strong> Herramientas de <em>software</em> utilizadas en el desarrollo.</p>
+<table>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Versión</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Arduino IDE</td>
+<td>2.x</td>
+<td>Desarrollo y carga del <em>firmware</em> ESP8266</td>
+</tr>
+<tr>
+<td>Node.js</td>
+<td>18.x LTS</td>
+<td>Entorno de ejecución del servidor <em>backend</em></td>
+</tr>
+<tr>
+<td>Express</td>
+<td>4.x</td>
+<td><em>Framework</em> para API REST</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>8.x</td>
+<td>Base de datos relacional</td>
+</tr>
+<tr>
+<td>Mosquitto</td>
+<td>2.x</td>
+<td><em>Broker</em> MQTT</td>
+</tr>
+<tr>
+<td>PM2</td>
+<td>5.x</td>
+<td>Gestor de procesos en producción</td>
+</tr>
+<tr>
+<td>Git</td>
+<td>2.x</td>
+<td>Control de versiones</td>
+</tr>
+</tbody></table>
+<h2>3.4 Metodología de desarrollo</h2>
+<p>El desarrollo del sistema SmartTemp se llevó a cabo siguiendo una <strong>metodología iterativa e incremental</strong>, específicamente adaptada a las características de un proyecto IoT que integra <em>hardware</em>, <em>firmware</em> y <em>software</em>.</p>
+<h3>3.4.1 Justificación de la metodología seleccionada</h3>
+<p>La selección de esta metodología se fundamenta en la complejidad técnica del sistema IoT, que integra múltiples dominios tecnológicos (<em>hardware</em> embebido, protocolos de comunicación, bases de datos, interfaces web) que requieren validación independiente antes de la integración final. Una metodología en cascada habría retrasado la detección de incompatibilidades hasta las fases finales del proyecto.</p>
+<p>Adicionalmente, los laboratorios de biología molecular presentan condiciones operativas específicas que pueden revelar requisitos no anticipados durante el análisis inicial. La metodología iterativa permite incorporar estos requisitos emergentes sin comprometer el cronograma. El personal del laboratorio debe evaluar la usabilidad y efectividad del sistema durante el desarrollo, y los incrementos funcionales permiten obtener retroalimentación temprana.</p>
+<h3>3.4.2 Comparación con metodologías alternativas</h3>
+<p class="ni"><strong>Tabla X.</strong> Comparación de metodologías de desarrollo para el sistema SmartTemp.</p>
+<table>
+<thead><tr><th>Criterio</th><th>Cascada</th><th>Ágil (Scrum)</th><th>Iterativa/Incremental</th></tr></thead>
+<tbody>
+<tr><td>Gestión de complejidad hardware-software</td><td>Baja</td><td>Media</td><td>Alta</td></tr>
+<tr><td>Adaptabilidad a requisitos emergentes</td><td>Baja</td><td>Alta</td><td>Alta</td></tr>
+<tr><td>Validación temprana con usuarios</td><td>Baja</td><td>Media</td><td>Alta</td></tr>
+<tr><td>Gestión de riesgos técnicos IoT</td><td>Baja</td><td>Media</td><td>Alta</td></tr>
+<tr><td>Documentación y trazabilidad</td><td>Alta</td><td>Baja</td><td>Media-Alta</td></tr>
+<tr><td>Adecuación para entorno académico</td><td>Media</td><td>Baja</td><td>Alta</td></tr>
+</tbody></table>
+<h3>3.4.3 Etapas de desarrollo</h3>
+<p>El desarrollo se organizó en siete etapas, donde cada una genera entregables específicos validados antes de avanzar:</p>
+<p><strong>Etapa 1 — Relevamiento y diseño</strong>: Identificación de puntos críticos de control de temperatura, definición de requisitos funcionales y no funcionales, y diseño de la arquitectura de tres capas. <em>Entregables</em>: documento de requisitos, arquitectura del sistema.</p>
+<p><strong>Etapa 2 — Desarrollo del <em>firmware</em></strong>: Implementación del código embebido para el ESP8266 con enfoque modular. <em>Entregables</em>: código fuente modular, pruebas de lectura de sensores, conectividad WiFi y almacenamiento <em>offline</em>.</p>
+<p><strong>Etapa 3 — Desarrollo del <em>backend</em></strong>: Implementación del servidor Node.js con Express, API REST, WebSocket, MQTT y MySQL. <em>Entregables</em>: servidor funcional, API documentada, base de datos implementada.</p>
+<p><strong>Etapa 4 — Desarrollo del <em>frontend</em></strong>: Implementación de la interfaz web con <em>dashboards</em>, calibración, diagnóstico y supervisiones. <em>Entregables</em>: interfaz completa, pruebas de usabilidad con personal del laboratorio.</p>
+<p><strong>Etapa 5 — Integración y pruebas</strong>: Integración de las tres capas, pruebas extremo a extremo. <em>Entregables</em>: sistema integrado, documentación de pruebas.</p>
+<p><strong>Etapa 6 — Despliegue y operación</strong>: Instalación en producción con PM2, capacitación del personal. <em>Entregables</em>: sistema operativo 24/7, manual de usuario.</p>
+<p><strong>Etapa 7 — Evaluación</strong>: Recolección de datos de desempeño, encuestas, análisis comparativo. <em>Entregables</em>: cumplimiento de criterios de aceptación.</p>
+<h3>3.4.4 Mecanismos de control y retroalimentación</h3>
+<p>La naturaleza iterativa se implementó mediante: revisiones semanales con el director de tesis, validaciones incrementales de cada módulo antes de la integración, sesiones de evaluación con personal del laboratorio al final de cada etapa, y documentación continua de decisiones técnicas y lecciones aprendidas.</p>
+<h2>3.5 Instrumentos de recolección de datos</h2>
+<h3>3.5.1 Datos generados por el propio sistema</h3>
+<p>El sistema SmartTemp genera de forma continua un conjunto de datos que constituyen la fuente primaria de información para la evaluación:</p>
+<ul>
+<li><strong>Mediciones de temperatura y voltaje</strong>: Registradas en la tabla <code>mediciones2</code> de la base de datos, con <em>timestamp</em>, identificador de sensor, temperatura corregida y voltaje.</li>
+<li><strong>Registros de conectividad</strong>: Información de red almacenada en las tablas <code>sensorip</code> y <code>sensorip_historial</code>, incluyendo dirección IP, dirección MAC, <em>gateway</em> y máscara de subred.</li>
+<li><strong>Eventos de <em>ping</em> MQTT</strong>: Registros de latencia y disponibilidad almacenados en la tabla <code>ping_monitoreo</code>.</li>
+<li><strong>Registros de supervisión</strong>: Observaciones del personal ante anomalías, almacenadas en la tabla <code>supervisiones</code>.</li>
+<li><strong>Logs del servidor</strong>: Registros de actividad del <em>backend</em>, incluyendo errores, reconexiones y procesamiento de datos <em>offline</em>.</li>
+</ul>
+<h3>3.5.2 Termómetro de referencia</h3>
+<p>Para la validación de la precisión de los sensores DS18B20, se utilizó un termómetro de referencia calibrado como patrón de comparación. Las mediciones del sistema SmartTemp se contrastaron con las lecturas del termómetro de referencia en los mismos puntos de medición, permitiendo calcular el error absoluto y la desviación estándar de cada sensor.</p>
+<h3>3.5.3 Encuestas al personal</h3>
+<p>Se diseñó una encuesta estructurada para evaluar la percepción del personal del laboratorio respecto al sistema. La encuesta, implementada mediante el módulo de encuestas integrado en el propio sistema, incluye preguntas de selección simple, selección múltiple y escala tipo Likert, organizadas en las siguientes dimensiones:</p>
+<ul>
+<li>Facilidad de uso de la interfaz web</li>
+<li>Confiabilidad percibida del sistema</li>
+<li>Utilidad de las alertas y supervisiones</li>
+<li>Impacto en la rutina de trabajo diaria</li>
+<li>Satisfacción general con el sistema</li>
+</ul>
+<h2>3.6 Criterios de aceptación</h2>
+<p>Se definieron los siguientes criterios cuantitativos para evaluar el desempeño del sistema:</p>
+<p><strong>Tabla 5.</strong> Criterios de aceptación del sistema SmartTemp.</p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th>Métrica</th>
+<th>Valor aceptable</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Precisión de medición</td>
+<td>Error absoluto vs. termómetro de referencia</td>
+<td>≤ ±0,5 °C</td>
+</tr>
+<tr>
+<td>Disponibilidad del sistema</td>
+<td>Porcentaje de <em>uptime</em> del servidor</td>
+<td>≥ 99%</td>
+</tr>
+<tr>
+<td>Frecuencia de medición</td>
+<td>Intervalo entre mediciones consecutivas</td>
+<td>5 min ± 30 s</td>
+</tr>
+<tr>
+<td>Tiempo de detección de excursión</td>
+<td>Desde excursión hasta alerta en <em>dashboard</em></td>
+<td>≤ 5 minutos</td>
+</tr>
+<tr>
+<td>Latencia WebSocket</td>
+<td>Tiempo de actualización en tiempo real</td>
+<td>≤ 1 segundo</td>
+</tr>
+<tr>
+<td>Capacidad <em>offline</em></td>
+<td>Registros almacenables sin conectividad</td>
+<td>≥ 10.000 registros</td>
+</tr>
+<tr>
+<td>Recuperación <em>offline</em></td>
+<td>Datos sincronizados correctamente tras reconexión</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Tiempo de conexión WiFi</td>
+<td>Con caché de canal/BSSID</td>
+<td>≤ 3 segundos</td>
+</tr>
+<tr>
+<td>Satisfacción del personal</td>
+<td>Puntuación promedio en encuesta (escala 1-5)</td>
+<td>≥ 4,0</td>
+</tr>
+</tbody></table>
+<p>Estos criterios fueron definidos considerando los requisitos normativos (ANMAT, ISO 15189), las especificaciones técnicas de los componentes (DS18B20, ESP8266) y las necesidades operativas del laboratorio.</p>
+
+</div>

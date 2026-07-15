@@ -1,0 +1,86 @@
+<div class="page" id="anexo-k">
+  <section id="anexo-k">
+<h2>Anexo K: Presupuesto del Sistema y Normativa Aplicable</h2>
+<p>Análisis de costos del sistema SmartTemp y marco normativo aplicable.</p>
+
+<h3>K.1 Presupuesto del Sistema SmartTemp</h3>
+
+<h4>Bill of Materials (BOM) por nodo sensor</h4>
+<table>
+  <thead><tr><th>Componente</th><th>Descripción</th><th>Costo (USD)</th></tr></thead>
+  <tbody>
+    <tr><td>ESP8266 (Wemos D1 Mini)</td><td>Microcontrolador WiFi 802.11 b/g/n</td><td>~2.00</td></tr>
+    <tr><td>DS18B20 (encapsulado)</td><td>Sensor temperatura digital, cable 1m</td><td>~1.00</td></tr>
+    <tr><td>Resistencias (4.7kΩ, 100kΩ, 330kΩ)</td><td>Pull-up OneWire + divisor voltaje</td><td>~0.03</td></tr>
+    <tr><td>Fuente 5V USB + cable</td><td>Adaptador pared + cable micro-USB</td><td>~2.50</td></tr>
+    <tr><td>Carcasa + PCB</td><td>Caja IP54 + placa montaje</td><td>~1.50</td></tr>
+    <tr><td><strong>Total por nodo</strong></td><td></td><td><strong>~7.03</strong></td></tr>
+  </tbody>
+</table>
+
+<h4>Costos de infraestructura (mensual)</h4>
+<table>
+  <thead><tr><th>Concepto</th><th>Descripción</th><th>Costo (USD/mes)</th></tr></thead>
+  <tbody>
+    <tr><td>VPS servidor</td><td>1 vCPU, 1GB RAM, 25GB SSD</td><td>~5.00</td></tr>
+    <tr><td>Dominio</td><td>Registro .com (anualizado)</td><td>~1.00</td></tr>
+    <tr><td>MQTT + MySQL + SSL</td><td>Incluido en VPS</td><td>0.00</td></tr>
+    <tr><td><strong>Total mensual</strong></td><td></td><td><strong>~6.00</strong></td></tr>
+  </tbody>
+</table>
+
+<h4>Comparación con soluciones comerciales</h4>
+<table>
+  <thead><tr><th>Solución</th><th>Costo inicial</th><th>Costo mensual</th><th>Observaciones</th></tr></thead>
+  <tbody>
+    <tr><td><strong>SmartTemp (propuesta)</strong></td><td>$70 (10 sensores)</td><td>$6</td><td>Código abierto, personalizable</td></tr>
+    <tr><td>Testo Saveris 2</td><td>$1,200-2,000</td><td>$50-100</td><td>Solución comercial completa</td></tr>
+    <tr><td>Onset HOBO</td><td>$800-1,500</td><td>$30-60</td><td>Dataloggers + software</td></tr>
+  </tbody>
+</table>
+
+<h3>K.2 Marco Normativo Aplicable</h3>
+
+<h4>Normativas Nacionales (Argentina)</h4>
+<table>
+  <thead><tr><th>Norma</th><th>Descripción</th><th>Aplicabilidad SmartTemp</th></tr></thead>
+  <tbody>
+    <tr><td>ANMAT Disp. 2819/2004</td><td>Buenas Prácticas de Laboratorio</td><td>Trazabilidad condiciones ambientales</td></tr>
+    <tr><td>ANMAT Disp. 3602/2004</td><td>Habilitación laboratorios</td><td>Requisitos infraestructura</td></tr>
+    <tr><td>Ley 25.326</td><td>Protección Datos Personales</td><td>Manejo información laboratorio</td></tr>
+  </tbody>
+</table>
+
+<h4>Normativas Internacionales</h4>
+<table>
+  <thead><tr><th>Norma</th><th>Descripción</th><th>Requisitos SmartTemp</th></tr></thead>
+  <tbody>
+    <tr><td>ISO 15189:2012</td><td>Laboratorios clínicos</td><td>Control condiciones ambientales</td></tr>
+    <tr><td>ISO/IEC 17025:2017</td><td>Competencia laboratorios</td><td>Trazabilidad mediciones</td></tr>
+    <tr><td>WHO TRS 961</td><td>Cadena frío vacunas</td><td>Monitoreo continuo temperatura</td></tr>
+    <tr><td>FDA 21 CFR Part 11</td><td>Registros electrónicos</td><td>Integridad datos digitales</td></tr>
+  </tbody>
+</table>
+
+<h4>Requisitos Técnicos Específicos</h4>
+<ul>
+  <li><strong>Precisión:</strong> ±0.5°C (ISO 15189, ANMAT 2819/2004)</li>
+  <li><strong>Frecuencia:</strong> Registro continuo cada 5-15 minutos</li>
+  <li><strong>Trazabilidad:</strong> Timestamps precisos, registros inalterables</li>
+  <li><strong>Alertas:</strong> Notificación inmediata de excursiones</li>
+  <li><strong>Respaldo:</strong> Almacenamiento redundante de datos</li>
+  <li><strong>Calibración:</strong> Verificación anual con patrones certificados</li>
+</ul>
+
+<h4>Cumplimiento SmartTemp</h4>
+<p>El sistema SmartTemp cumple con los requisitos normativos mediante:</p>
+<ul>
+  <li>Precisión ±0.5°C validada con datalogger calibrado</li>
+  <li>Registro continuo cada 5 minutos con timestamps UTC</li>
+  <li>Base de datos MySQL con integridad referencial</li>
+  <li>Alertas automáticas por email y WebSocket</li>
+  <li>Respaldo automático de datos y logs de auditoría</li>
+  <li>Interfaz de calibración con factores de corrección</li>
+</ul>
+</section>
+</div>

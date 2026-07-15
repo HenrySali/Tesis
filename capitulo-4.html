@@ -1,0 +1,203 @@
+<div class="page" id="capitulo-4">
+  <h1>4. Diseño e Implementación del Sistema</h1>
+<p>Este capítulo constituye el núcleo técnico de la tesis. Se describe en detalle el diseño y la implementación del sistema SmartTemp, organizado según las tres capas de la arquitectura IoT: percepción (sensores), procesamiento (<em>backend</em>) y aplicación (<em>frontend</em>).</p>
+<h2>4.1 Arquitectura general del sistema</h2>
+<p>El sistema SmartTemp se diseñó siguiendo el modelo de arquitectura IoT de tres capas (Al-Fuqaha et al., 2015). La Figura 1 presenta el diagrama general.</p>
+<p><strong>Figura 1.</strong> Arquitectura general del sistema SmartTemp basada en el modelo IoT de tres capas.</p>
+<p>El flujo principal de datos opera de la siguiente manera: (1) el ESP8266 mide la temperatura mediante el DS18B20 y el voltaje de alimentación cada 5 minutos; (2) se conecta al WiFi y envía los datos por HTTP POST al servidor; (3) el servidor verifica el sensor, aplica el factor de corrección y almacena la medición en MySQL; (4) el servidor WebSocket reenvía los datos a todos los clientes web conectados; (5) el <em>frontend</em> actualiza la visualización sin recargar la página.</p>
+<p>El protocolo MQTT establece un canal bidireccional que permite al servidor enviar comandos a los sensores: <em>ping</em> remoto, configuración de intervalos y confirmación de recepción.</p>
+<h2>4.2 Capa de percepción: Firmware ESP8266</h2>
+<h3>4.2.1 Hardware utilizado</h3>
+<p>Cada nodo sensor se compone de un módulo ESP8266 NodeMCU conectado a un sensor de temperatura DS18B20 mediante el protocolo <em>OneWire</em> en el pin GPIO 14 (D5). La lectura de voltaje de alimentación se realiza a través del pin analógico A0 con un divisor de voltaje (factor de calibración 5,0).</p>
+<p>La lectura de temperatura se realiza con resolución de 12 bits (0,0625 °C), con un tiempo de conversión de 750 ms. El <em>firmware</em> implementa un mecanismo de reintentos: si la primera lectura falla, se realizan hasta 3 intentos con 2 segundos de espera entre cada uno. Si todos fallan, se reporta el valor especial 0,1111, que el servidor interpreta como sensor DS18B20 desconectado del módulo.</p>
+<h3>4.2.2 Modos de operación</h3>
+<p>El <em>firmware</em> implementa dos modos de operación, seleccionados automáticamente según el voltaje de alimentación:</p>
+<p><strong>Modo continuo</strong> (voltaje &gt; 3,6 V): El módulo permanece encendido, conectado al WiFi y suscrito a los <em>topics</em> MQTT. Mide y envía datos cada 5 minutos. Se utiliza cuando el sensor está alimentado por corriente continua.</p>
+<p><strong>Modo <em>deep sleep</em></strong> (voltaje &lt; 3,6 V): El módulo se duerme entre mediciones para conservar batería. El consumo se reduce de ~80 mA (activo) a ~20 µA. Al despertar, conecta WiFi, mide, envía y vuelve a dormir. El intervalo es configurable remotamente vía MQTT (5 a 60 minutos).</p>
+<h3>4.2.3 Conexión WiFi optimizada</h3>
+<p>El <em>firmware</em> implementa un sistema de caché WiFi en EEPROM que almacena el canal y el BSSID del router. En la siguiente conexión, el ESP8266 utiliza estos datos para conectar directamente al canal correcto, reduciendo el tiempo de conexión de ~6 segundos (escaneo completo) a ~2 segundos (conexión directa). Si la conexión con caché falla, se realiza un escaneo completo como <em>fallback</em>. El <em>timeout</em> de conexión es de 6 segundos. La obtención de dirección IP se realiza mediante DHCP.</p>
+<h3>4.2.4 Envío de datos</h3>
+<p>Cada medición se envía al servidor mediante HTTP POST al <em>endpoint</em> <code>/data</code> con un cuerpo JSON que incluye: identificador del sensor, temperatura, voltaje, estado del sensor, dirección IP del módulo, dirección MAC, dirección IP del <em>gateway</em> y máscara de subred. Esta información de red permite al servidor detectar cambios de módulo físico y mantener un historial de asignaciones.</p>
+<h3>4.2.5 Gestión <em>offline</em></h3>
+<p>La gestión <em>offline</em> constituye una de las funcionalidades más críticas del sistema, ya que garantiza la continuidad del registro de temperatura ante cortes de conectividad —un requisito normativo para la trazabilidad de la cadena de frío.</p>
+<p><strong>Almacenamiento local en LittleFS</strong>: Cuando el sensor no puede conectarse al servidor, los datos se almacenan en el archivo <code>/offline_data.json</code> en la memoria Flash, utilizando el sistema de archivos LittleFS. Cada registro se almacena en formato JSON compacto, con una capacidad máxima de 10.000 registros. A un intervalo de 5 minutos (288 registros por día), esto proporciona una autonomía de aproximadamente 34 días sin conectividad.</p>
+<p><strong>Sistema de <em>timestamps</em> con 5 niveles de respaldo</strong>: El desafío principal del modo <em>offline</em> es mantener una referencia temporal precisa sin un reloj de tiempo real de <em>hardware</em> dedicado. SmartTemp resuelve esto con un sistema jerárquico:</p>
+<ol>
+<li><strong>NTP sincronizado</strong>: Cuando el sensor tiene WiFi, sincroniza su reloj con servidores NTP (<code>pool.ntp.org</code>, <code>time.nist.gov</code>).</li>
+<li><strong>Memoria RTC del ESP8266</strong>: 512 bytes de RAM que sobreviven al <em>deep sleep</em> (pero no a la pérdida total de energía).</li>
+<li><strong>Archivo en LittleFS</strong> (<code>/offline_ts.txt</code>): <em>Timestamp</em> almacenado en memoria Flash no volátil, actualizado en cada ciclo.</li>
+<li><strong>Backup en EEPROM</strong>: Cada 60 minutos se guarda el <em>timestamp</em> en EEPROM emulada (~11 años de vida útil a 24 escrituras diarias).</li>
+<li><strong>Sin referencia temporal</strong>: Los datos se guardan con <em>timestamp</em> 0 y se calculan retroactivamente al sincronizar.</li>
+</ol>
+<p><strong>Sincronización retroactiva</strong>: Al recuperar la conexión, el sensor obtiene la hora del servidor y calcula el <em>timestamp</em> de cada registro mediante: <code>timestamp = serverTime - ((totalRecords - currentIndex) × intervalo)</code>. Cada registro se envía individualmente con un <em>delay</em> de 200 ms entre envíos.</p>
+<h3>4.2.6 Comunicación MQTT</h3>
+<p>El sensor se conecta al <em>broker</em> MQTT para comunicación bidireccional. Los <em>topics</em> utilizados son:</p>
+<p><strong>Tabla 6.</strong> <em>Topics</em> MQTT utilizados en la comunicación sensor-servidor.</p>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th><em>Topic</em></th>
+<th>Dirección</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Recibir solicitudes de <em>ping</em></td>
+<td><code>sensores/ping/request</code></td>
+<td>Servidor → Sensor</td>
+</tr>
+<tr>
+<td>Responder <em>ping</em></td>
+<td><code>sensores/ping/response</code></td>
+<td>Sensor → Servidor</td>
+</tr>
+<tr>
+<td>Recibir configuraciones</td>
+<td><code>sensores/config/{sensorId}</code></td>
+<td>Servidor → Sensor</td>
+</tr>
+<tr>
+<td>Confirmar configuración</td>
+<td><code>sensores/config/ack</code></td>
+<td>Sensor → Servidor</td>
+</tr>
+</tbody></table>
+<p>La reconexión MQTT se implementó con la filosofía &quot;el sensor mide, el servidor busca&quot;: en lugar de reconexiones agresivas, el sensor guarda <em>offline</em> y el servidor dispara un <em>ping</em> masivo al recuperar la conexión con el <em>broker</em>.</p>
+<h3>4.2.7 Sistemas de protección</h3>
+<ul>
+<li><strong>Watchdog</strong>: Reinicio automático si no se envían datos en 15 minutos.</li>
+<li><strong>Reset preventivo del bus <em>OneWire</em></strong>: Cada 5 minutos, para prevenir errores acumulados.</li>
+<li><strong>Reintentos de lectura</strong>: Hasta 3 intentos con 2 segundos entre cada uno.</li>
+</ul>
+<h2>4.3 Capa de procesamiento: Servidor <em>Backend</em></h2>
+<h3>4.3.1 Servidor principal</h3>
+<p>El servidor <em>backend</em> se implementó en Node.js con Express, operando en el puerto 8055. Su función principal es recibir los datos de los sensores, procesarlos, almacenarlos en MySQL y distribuirlos en tiempo real a los clientes web mediante WebSocket. En producción, el servidor se gestiona con PM2.</p>
+<h3>4.3.2 Procesamiento de datos entrantes</h3>
+<p>El módulo <code>data-route.js</code> implementa el flujo de procesamiento al recibir una medición en <code>/data</code>:</p>
+<ol>
+<li><strong>Verificación del sensor</strong>: Se consulta <code>sensores_detectados</code>. Si es nuevo, se registra automáticamente.</li>
+<li><strong>Detección de cambio de módulo</strong>: Se compara IP y MAC con <code>sensorip</code>. Si difieren, se registra en <code>sensorip_historial</code>.</li>
+<li><strong>Aplicación del factor de corrección</strong>: Se consulta <code>Fcorreccion</code> y se calcula: <code>temperatura_final = temperatura_medida + factor_corrección</code>.</li>
+<li><strong>Almacenamiento</strong>: La medición corregida se inserta en <code>mediciones2</code>.</li>
+<li><strong>Actualización de información de red</strong>: Se actualiza <code>sensorip</code> con IP, MAC, <em>gateway</em> y máscara.</li>
+</ol>
+<h3>4.3.3 API REST</h3>
+<p>Las rutas se organizan de forma modular en <code>rutas2/</code>, separadas por método HTTP:</p>
+<ul>
+<li><code>rutasGet.js</code>: Consultas de sensores, mediciones, umbrales, correcciones, equipos, sectores, usuarios, configuraciones e interfaces de red.</li>
+<li><code>rutasPost.js</code>: Creación de entidades, autenticación, registro de supervisiones.</li>
+<li><code>rutasPut.js</code>: Actualización de entidades.</li>
+<li><code>rutasDelete.js</code>: Eliminación con cascada.</li>
+<li><code>rutasPingMQTT.js</code>: <em>Ping</em> MQTT individual y masivo.</li>
+<li><code>rutasConfigMQTT.js</code>: Configuración remota de intervalos.</li>
+<li><code>rutas-sensorip.js</code>: Información de red e interfaces.</li>
+<li><code>rutasOptimizadas.js</code>: <em>Endpoints</em> que consolidan múltiples consultas.</li>
+</ul>
+<p>El cargador central (<code>rutas2/index.js</code>) inyecta las dependencias compartidas en cada módulo.</p>
+<h3>4.3.4 Comunicación en tiempo real (WebSocket)</h3>
+<p>El servidor WebSocket mantiene conexiones persistentes con los clientes web. Los clientes se registran por tipo (&quot;diagnostico&quot;, &quot;visualizacion&quot;), permitiendo actualizaciones selectivas.</p>
+<p>Se implementó actualización diferencial: el servidor calcula un <em>hash</em> MD5 de los datos y solo transmite si hubo cambios. En el cliente, la reconexión usa <em>backoff</em> exponencial (2 s a 30 s máximo).</p>
+<h3>4.3.5 Sistema MQTT (servidor)</h3>
+<ul>
+<li><strong>Ping individual</strong>: Solicitud a un sensor específico, <em>timeout</em> de 15 segundos, cálculo de latencia.</li>
+<li><strong>Ping masivo</strong>: Disparo automático al reconectarse el <em>broker</em>. Reintentos cada 30 s, hasta 5 intentos. Resultados en tabla <code>ping_monitoreo</code>.</li>
+<li><strong>Configuración remota</strong>: Modificación de intervalos por sensor individual o por sector.</li>
+</ul>
+<h3>4.3.6 Optimización y rendimiento</h3>
+<ul>
+<li><strong>Compresión gzip</strong>: Para todas las respuestas HTTP.</li>
+<li><strong>Caché centralizado</strong>: Datos en memoria con TTL.</li>
+<li><strong>Pool de conexiones MySQL</strong>: Conexiones reutilizables con <em>timeouts</em> multi-nivel.</li>
+<li><strong>Consultas paralelas</strong>: <code>Promise.all</code> para consultas independientes.</li>
+<li><strong>Headers de caché HTTP</strong>: <code>Cache-Control</code> para recursos estáticos.</li>
+</ul>
+<h3>4.3.7 Base de datos MySQL</h3>
+<p>Aproximadamente 25 tablas organizadas en grupos funcionales:</p>
+<p><strong>Tabla 7.</strong> Organización de las tablas de la base de datos SmartTemp.</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Tablas</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Datos principales</td>
+<td><code>sensores</code>, <code>mediciones2</code>, <code>equipos</code>, <code>sectores</code></td>
+<td>Entidades centrales</td>
+</tr>
+<tr>
+<td>Relaciones</td>
+<td><code>sensor_equipos</code>, <code>sector_equipos</code>, <code>user_sectors</code></td>
+<td>Jerarquía Sector → Equipos → Sensores</td>
+</tr>
+<tr>
+<td>Red y conectividad</td>
+<td><code>sensorip</code>, <code>sensorip_historial</code>, <code>Heartbeat</code>, <code>sensor_events</code>, <code>sensores_detectados</code></td>
+<td>Diagnóstico de red</td>
+</tr>
+<tr>
+<td>Calibración</td>
+<td><code>umbrales</code>, <code>Fcorreccion</code>, <code>sensor_config</code></td>
+<td>Configuración por sensor</td>
+</tr>
+<tr>
+<td>Supervisión</td>
+<td><code>supervisiones</code>, <code>eventos</code>, <code>correos_novedades</code></td>
+<td>Registro de anomalías</td>
+</tr>
+<tr>
+<td>Usuarios</td>
+<td><code>users</code>, <code>historial_sesiones</code></td>
+<td>Autenticación y auditoría</td>
+</tr>
+<tr>
+<td>Encuestas</td>
+<td><code>encuestas</code>, <code>preguntas</code>, <code>opciones_respuesta</code>, <code>entrevistados</code>, <code>respuestas</code></td>
+<td>Evaluación del sistema</td>
+</tr>
+<tr>
+<td>Sistema</td>
+<td><code>system_config</code>, <code>ping_monitoreo</code></td>
+<td>Configuración global y monitoreo</td>
+</tr>
+</tbody></table>
+<p>La tabla <code>mediciones2</code> cuenta con un índice compuesto en <code>(idsensor, fecha DESC)</code> para optimizar las consultas de datos históricos por sensor.</p>
+<h3>4.3.8 Seguridad y autenticación</h3>
+<p>Autenticación basada en roles con cuatro niveles: administrador, coordinador, operador y visualizador. Filtrado de sensores por sector según rol. Sesiones registradas en <code>historial_sesiones</code> para auditoría.</p>
+<h2>4.4 Capa de aplicación: Frontend Web</h2>
+<p>Interfaz desarrollada con HTML5, CSS3 y JavaScript vanilla (ES6+), sin <em>frameworks</em>, priorizando rendimiento. Soporte para modo oscuro y diseño responsivo.</p>
+<h3>4.4.1 Dashboard de visualización</h3>
+<p>Panel de resumen con 4 tarjetas (total sensores, en línea, fuera de línea, con alertas), lista de sensores con indicador de estado, detalle del sensor seleccionado (temperatura, voltaje, fecha, red), búsqueda y filtrado en tiempo real, actualización automática cada 30 segundos vía WebSocket.</p>
+<h3>4.4.2 Dashboard gráfico</h3>
+<p>Tabla de datos con última medición de todos los sensores y 4 gráficos Chart.js (temperatura actual, histórico, voltaje, distribución). Coloreo por umbrales: verde (normal), amarillo (cerca del límite, &lt; 1,5 °C), rojo (fuera de rango). Modal de detalle por sensor. Soporte modo oscuro.</p>
+<h3>4.4.3 Sistema de calibración</h3>
+<p>Dos parámetros configurables por sensor:</p>
+<ul>
+<li><strong>Umbrales de alerta</strong>: Rangos permitidos de temperatura y voltaje. Cuando una medición excede estos rangos, se activa la señalización visual y el botón de supervisión.</li>
+<li><strong>Factor de corrección</strong>: Valor que se suma a la temperatura medida para compensar errores sistemáticos. Se aplica en el <em>backend</em> al recibir cada dato.</li>
+</ul>
+<h3>4.4.4 Sistema de diagnóstico</h3>
+<p>Panel de observabilidad con 6 secciones:</p>
+<ol>
+<li><strong>Estado del servidor</strong>: Verificación HTTP (<code>/ping</code>).</li>
+<li><strong>Estado WebSocket</strong>: Conexión, estadísticas, latencia <em>ping/pong</em>.</li>
+<li><strong>Estado de sensores</strong>: <em>Ping</em> HTTP y MQTT, configuración de intervalos, tabla de interfaces con filtros y paginación.</li>
+<li><strong>Registro de eventos</strong>: <em>Log</em> en tiempo real con colores por nivel. Verificación de red: &gt;40% desconectados + sin actividad 15 min = red caída.</li>
+<li><strong>Consola del servidor</strong>: <em>Logs</em> del <em>backend</em> en tiempo real cada 5 s.</li>
+<li><strong>Verificación de red</strong>: Análisis automático del estado general.</li>
+</ol>
+<h3>4.4.5 Gestión de equipos y sectores</h3>
+<p>Jerarquía de tres niveles: Sector → Equipos → Sensores. CRUD completo para equipos y sectores. Auto-detección de sensores nuevos. Eliminación en cascada.</p>
+<h3>4.4.6 Sistema de supervisiones</h3>
+<ul>
+<li><strong>Detección automática</strong>: Sensor desconectado (0,1111), temperatura fuera de umbral, voltaje fuera de umbral.</li>
+<li><strong>Señalización visual</strong>: Botones con iconos y colores según tipo de problema.</li>
+<li><strong>Registro</strong>: Observaciones del supervisor, estado de resolución, fecha.</li>
+<li><strong>Trazabilidad</strong>: Contador de supervisiones por sensor e historial.</li>
+</ul>
+<h3>4.4.7 Sistema de encuestas</h3>
+<p>Módulo integrado para evaluar la satisfacción del personal. Soporta preguntas de múltiples tipos (texto, selección simple, selección múltiple, escala), acceso por clave y registro de respuestas.</p>
+
+</div>

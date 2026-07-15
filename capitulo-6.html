@@ -1,0 +1,77 @@
+<div class="page" id="capitulo-6">
+  <h1>6. Discusión</h1>
+
+<h2>6.1 Análisis de resultados vs. objetivos planteados</h2>
+
+<p>El objetivo general fue diseñar e implementar un sistema IoT de monitoreo continuo de temperatura para garantizar la integridad de la cadena de frío. Los resultados obtenidos durante 113 días de operación permiten afirmar que este objetivo se cumplió: SmartTemp registró 43.430 mediciones de temperatura de forma autónoma, detectó excursiones en tiempo real, notificó automáticamente al personal y mantuvo la continuidad del registro ante cortes de conectividad y caídas del servidor.</p>
+
+<p>En relación con los objetivos específicos:</p>
+
+<p><strong>Objetivo 1</strong> (Relevamiento): Se identificaron los equipos de frío con sus rangos de temperatura operativa, configurando umbrales específicos por equipo: heladera (0 a 10 °C), freezer (-30 a -15 °C).</p>
+
+<p><strong>Objetivo 2</strong> (Red de sensores): Se implementó la red ESP8266 + DS18B20 con comunicación HTTP y MQTT. La calibración contra el patrón Madgetech OctTemp arrojó un error residual post-corrección de ±0,35 °C, cumpliendo el criterio CA-1 (≤ ±0,5 °C). La validación extendida con dataloggers UTRID-16 durante 25 días confirmó la concordancia mediante análisis de Bland-Altman (ICC = 0,758 y 0,799).</p>
+
+<p><strong>Objetivo 3</strong> (Backend): Servidor Node.js operativo con API REST modular, base de datos MySQL, broker MQTT Mosquitto y servidor WebSocket. La disponibilidad en modo de operación estable alcanzó 99,3-99,7%.</p>
+
+<p><strong>Objetivo 4</strong> (Frontend): Interfaz web completa con dashboard de visualización, gráficos históricos, sistema de calibración, panel de diagnóstico de red, gestión de equipos/sectores y módulo de supervisiones.</p>
+
+<p><strong>Objetivo 5</strong> (Gestión offline): El sistema de 5 niveles de respaldo de timestamp demostró recuperación del 100% de los datos tras 1.539 reconexiones, incluyendo una prueba intencional de 4 días sin servidor con 3.085 registros recuperados íntegramente.</p>
+
+<p><strong>Objetivo 6</strong> (Trazabilidad): El sistema genera registros continuos 24/7 con 43.430 mediciones, 2.959 eventos de conectividad, 155 notificaciones automáticas y 3 supervisiones documentadas, constituyendo la evidencia requerida para auditorías de calidad.</p>
+
+<p><strong>Objetivo 7</strong> (Evaluación): Se evaluaron 8 de los 9 criterios de aceptación definidos, cumpliendo satisfactoriamente todos los evaluados. El criterio CA-9 (satisfacción del personal) no fue evaluado dado que el sistema no se desplegó con personal operativo durante el período de esta tesis.</p>
+
+<h2>6.2 Hallazgo principal: detección de anomalía térmica</h2>
+
+<p>El resultado más significativo de la validación en Favaloro fue la detección de una anomalía térmica en la cámara de frío: ciclos de compresión con amplitud de ~20 °C (oscilando entre -8 °C y +12 °C) con período de ~35 minutos. Esta amplitud excede el rango aceptable para almacenamiento de sustancias termosensibles (2-8 °C).</p>
+
+<p>Este hallazgo valida la premisa central de la tesis: el monitoreo continuo con resolución de 5 minutos detecta condiciones que el registro manual (1-2 lecturas/día) no puede identificar. Un operador que registre la temperatura a las 8:00 y a las 14:00 podría obtener valores dentro de rango en ambos momentos, sin percibir que entre esas lecturas la cámara oscila fuera de los límites seguros.</p>
+
+<h2>6.3 Análisis del Bland-Altman en el contexto de la cámara</h2>
+
+<p>Los límites de concordancia amplios (±8-10 °C) entre sensores SmartTemp y dataloggers UTRID-16 no reflejan un error del sensor sino el gradiente térmico espacial dentro de la cámara durante los ciclos de compresión. El sesgo del sensor Freezer (-0,15 °C, p = 0,36) confirma ausencia de error sistemático significativo. El sesgo del sensor Heladera 1 (-1,20 °C) se atribuye a su posición más cercana al evaporador.</p>
+
+<p>La calibración puntual (3 mediciones por sensor con patrón e instrumentos en el mismo punto) sigue siendo la evidencia más sólida de la precisión del sensor (±0,35 °C), consistente con la validación de Rodríguez-Rama et al. (2025) que reportó MAE de 0,046-0,130 °C para DS18B20 con calibración por software.</p>
+
+<h2>6.4 Disponibilidad: contexto de la evaluación</h2>
+
+<p>La disponibilidad global (64-70%) refleja las condiciones reales del período de evaluación, que incluyó desarrollo iterativo del firmware con cambios frecuentes de modo e intervalo (más de 150 cambios de configuración registrados), operación sobre red WiFi doméstica y un traslado físico de los sensores. Estos factores no son representativos de un despliegue en producción.</p>
+
+<p>En condiciones estables (modo continuo, red WiFi institucional, sin intervención en la configuración), la disponibilidad superó el 99% (287-288 mediciones/día de las 288 esperadas). Esto es consistente con lo reportado en la literatura para sistemas ESP8266 con reconexión WiFi optimizada (Ramírez-Faz et al., 2020).</p>
+
+<h2>6.5 Gestión offline: diferenciador principal</h2>
+
+<p>La gestión offline con 5 niveles de respaldo de timestamp y sincronización retroactiva es la funcionalidad que más diferencia a SmartTemp de los sistemas publicados en la literatura. Ninguno de los 7 sistemas revisados en el estado del arte implementa esta funcionalidad de forma completa. La prueba de 4 días sin servidor (3.085 registros recuperados con pérdida cero) demuestra que el sistema mantiene la trazabilidad continua incluso ante fallas prolongadas de infraestructura.</p>
+
+<h2>6.6 Problemas encontrados durante la implementación</h2>
+
+<p><strong>Reconexión MQTT agresiva</strong>: El firmware inicial entraba en ciclos de reconexión que bloqueaban el sensor. Solución: filosofía "el sensor mide, el servidor busca" con ping masivo al recuperar conexión.</p>
+
+<p><strong>Boot loop por medición al arranque</strong>: La primera lectura del sensor causaba reinicios periódicos. Solución: delegar la primera medición al ciclo normal con flag <code>firstRun = true</code>.</p>
+
+<p><strong>Cobertura WiFi</strong>: Zonas con señal débil causaban desconexiones frecuentes. Solución: caché de canal/BSSID en EEPROM para reconexión rápida (~2 s).</p>
+
+<p><strong>Desgaste de memoria Flash</strong>: Escrituras frecuentes en EEPROM. Solución: throttling a 60 minutos mínimo y uso de LittleFS con wear leveling.</p>
+
+<p><strong>Cambio PT100 → DS18B20</strong>: El anteproyecto contemplaba PT100 para freezers. Se optó por DS18B20 exclusivamente por su rango suficiente (-55 °C a +125 °C), protocolo digital, menor costo y simplicidad de electrónica, decisión respaldada por Ferraris y Paleari (2022).</p>
+
+<h2>6.7 Lecciones aprendidas</h2>
+
+<ol>
+<li><strong>La gestión offline es tan importante como la comunicación en línea</strong>: Los cortes de conectividad son frecuentes e inevitables. El sistema debe diseñarse asumiendo que la conexión fallará.</li>
+<li><strong>La modularización del firmware facilita el mantenimiento</strong>: La separación en módulos (sensor, WiFi, MQTT, storage, modos) permitió diagnosticar y corregir errores de forma aislada.</li>
+<li><strong>El diagnóstico remoto reduce el tiempo de resolución</strong>: El ping MQTT y la configuración remota evitan la necesidad de acceso físico al sensor.</li>
+<li><strong>La calibración por software es más práctica que por hardware</strong>: El factor de corrección aplicado en el backend permite ajustes sin intervención física.</li>
+<li><strong>El monitoreo continuo revela problemas invisibles al registro manual</strong>: La anomalía térmica de la cámara de Favaloro solo es detectable con resolución temporal de minutos.</li>
+</ol>
+
+<h2>6.8 Limitaciones del estudio</h2>
+
+<ol>
+<li>El sistema no se desplegó en un laboratorio con personal operativo, por lo que no se evaluó la satisfacción del usuario (CA-9).</li>
+<li>La comunicación no implementa cifrado TLS en MQTT ni HTTPS en la interfaz web.</li>
+<li>La validación metrológica se realizó a un solo punto de temperatura (~5 °C); una validación multipunto fortalecería la evidencia.</li>
+<li>El servidor no cuenta con redundancia; una falla prolongada interrumpe la recepción de datos en tiempo real (aunque los sensores continúan almacenando offline).</li>
+</ol>
+
+</div>

@@ -1,0 +1,52 @@
+<div class="page" id="anexo-f">
+  <section id="anexo-f">
+<h2>Anexo F: Manual de Operación del Sistema</h2>
+<p>Manual de operación del sistema SmartTemp para el operador del laboratorio. Las capturas de pantalla de las interfaces se encuentran en los Anexos D y E.</p>
+
+<h3>Sistema de Diagnóstico</h3>
+<h3>Sistema de Diagnóstico
+</h3>
+<p>&gt; Panel de control técnico para verificar el estado del servidor, red, sensores, interfaces de red y configurar intervalos de envío de datos.</p>
+<p>---</p>
+<h4>Descripción General
+</h4>
+<p>La página de diagnóstico (`diagnostico/index.html`) es el panel de control técnico del sistema SmartTemp. Permite verificar en tiempo real el estado de todos los componentes: servidor backend, conexión WebSocket, sensores individuales (ping HTTP y MQTT), interfaces de red, y configurar los intervalos de envío de datos.</p>
+<p>En sistemas IoT de monitoreo continuo, la capacidad de diagnóstico remoto es fundamental para mantener la disponibilidad del servicio. La página de diagnóstico implementa el concepto de &quot;observabilidad&quot; (observability) de sistemas distribuidos, proporcionando tres pilares: métricas (estado del servidor, tiempos de respuesta), logs (registro de eventos y consola del servidor) y trazas (flujo de comunicación WebSocket y MQTT).</p>
+<h4>Funcionamiento
+</h4>
+<h5>Secciones de la página (6 tarjetas)
+</h5>
+<p>**1. Estado del Servidor**: Indicador circular (verde/rojo/gris), verificación HTTP con `/ping` → &quot;pong&quot;.</p>
+<p>**2. Estado de Red (WebSocket)**: Estado de conexión, intentos de reconexión, mensajes enviados/recibidos, latencia ping/pong. Botones: Reconectar, Enviar Ping.</p>
+<p class="note">Contenido resumido. Ver documentación completa en el repositorio del proyecto.</p><h3>Gestión de Equipos y Sectores</h3>
+<h3>Gestión de Equipos y Sectores
+</h3>
+<p>&gt; Jerarquía organizacional Sector → Equipo → Sensor: CRUD completo, asociaciones, auto-detección de sensores y eliminación en cascada.</p>
+<p>---</p>
+<h4>Descripción General
+</h4>
+<p>SmartTemp organiza los sensores dentro de una estructura jerárquica de tres niveles que refleja la organización física del laboratorio. Esta jerarquía permite agrupar, filtrar y administrar los dispositivos de forma lógica, y es la base del sistema de control de acceso por roles.</p>
+<pre><code>Sector (ej: &quot;Laboratorio Hematología&quot;)
+  └── Equipo (ej: &quot;Heladera Reactivos A&quot;)
+        └── Sensor (ej: &quot;28FF6A1234...&quot;)
+</code></pre>
+<p>En sistemas de monitoreo de cadena de frío para laboratorios, la organización jerárquica es esencial para cumplir con los requisitos de trazabilidad de la norma ISO 15189. Cada punto de monitoreo (sensor) debe estar asociado a un equipo de almacenamiento específico (heladera, freezer) y a un área del laboratorio (sector), permitiendo generar reportes de cumplimiento por zona.</p>
+<h4>Funcionamiento
+</h4>
+<p class="note">Contenido resumido. Ver documentación completa en el repositorio del proyecto.</p><h3>Supervisiones</h3>
+<h3>Sistema de Supervisiones y Encuestas
+</h3>
+<p>&gt; Registro de supervisiones cuando un sensor tiene problemas, y sistema de encuestas para evaluar el impacto del sistema en el personal del laboratorio.</p>
+<p>---</p>
+<h4>Descripción General
+</h4>
+<p>SmartTemp incluye dos sistemas de registro de información humana: las supervisiones (cuando un usuario revisa un sensor con problemas) y las encuestas (formularios para el personal del laboratorio). Ambos sistemas son fundamentales para la trazabilidad y la evaluación del impacto del sistema.</p>
+<p>Las supervisiones implementan un flujo de gestión de incidencias inspirado en los principios de ITIL (Information Technology Infrastructure Library) para gestión de servicios. Cuando un sensor presenta una anomalía (desconexión, temperatura fuera de rango), el sistema genera una alerta visual y permite al personal registrar que revisó el problema, qué observó y si lo resolvió. Esto crea un registro auditable de las acciones tomadas ante cada incidencia.</p>
+<p>Las encuestas fueron diseñadas específicamente para la tesis de maestría, permitiendo evaluar cuantitativamente el impacto del sistema de monitoreo IoT comparando la situación antes y después de la implementación.</p>
+<h4>Funcionamiento
+</h4>
+<h5>1. Sistema de Supervisiones
+</h5>
+<p>**¿Cuándo aparece el botón de supervisar?**</p>
+<p class="note">Contenido resumido. Ver documentación completa en el repositorio del proyecto.</p></section>
+</div>

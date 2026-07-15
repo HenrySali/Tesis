@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tesis SmartTemp - Modular</title>
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="toolbar">
+  <h1>📄 Diseño e Implementación de un Sistema IoT para el Monitoreo Continuo de la Cadena de Frío en un Laboratorio de Biología Molecular</h1>
+  <div><button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button></div>
+</div>
+
+<div class="doc">
+    <div id="container-portada"></div>
+    <div id="container-resumen"></div>
+    <div id="container-toc"></div>
+    <div id="container-toc-figuras"></div>
+    <div id="container-toc-tablas"></div>
+    <div id="container-capitulo-1"></div>
+    <div id="container-capitulo-2"></div>
+    <div id="container-capitulo-3"></div>
+    <div id="container-capitulo-4"></div>
+    <div id="container-capitulo-5"></div>
+    <div id="container-capitulo-6"></div>
+    <div id="container-capitulo-7"></div>
+    <div id="container-referencias"></div>
+    <div id="container-anexo-a"></div>
+    <div id="container-anexo-b"></div>
+    <div id="container-anexo-c"></div>
+    <div id="container-anexo-d"></div>
+    <div id="container-anexo-e"></div>
+    <div id="container-anexo-f"></div>
+    <div id="container-anexo-g"></div>
+    <div id="container-anexo-h"></div>
+    <div id="container-anexo-i"></div>
+    <div id="container-anexo-k"></div>
+    <div id="container-anexo-l"></div>
+</div>
+
+<script>
+async function loadSection(file, containerId) {
+  try {
+    const resp = await fetch(file);
+    if (!resp.ok) throw new Error(file + ': ' + resp.status);
+    const html = await resp.text();
+    document.getElementById(containerId).innerHTML = html;
+  } catch(e) {
+    console.error('Error cargando ' + file, e);
+    document.getElementById(containerId).innerHTML = 
+      '<div style="color:red;padding:20px">Error cargando ' + file + '</div>';
+  }
+}
+
+// Cargar todas las secciones
+Promise.all([
+    loadSection('portada.html', 'container-portada'),
+    loadSection('resumen.html', 'container-resumen'),
+    loadSection('toc.html', 'container-toc'),
+    loadSection('toc-figuras.html', 'container-toc-figuras'),
+    loadSection('toc-tablas.html', 'container-toc-tablas'),
+    loadSection('capitulo-1.html', 'container-capitulo-1'),
+    loadSection('capitulo-2.html', 'container-capitulo-2'),
+    loadSection('capitulo-3.html', 'container-capitulo-3'),
+    loadSection('capitulo-4.html', 'container-capitulo-4'),
+    loadSection('capitulo-5.html', 'container-capitulo-5'),
+    loadSection('capitulo-6.html', 'container-capitulo-6'),
+    loadSection('capitulo-7.html', 'container-capitulo-7'),
+    loadSection('referencias.html', 'container-referencias'),
+    loadSection('anexo-a.html', 'container-anexo-a'),
+    loadSection('anexo-b.html', 'container-anexo-b'),
+    loadSection('anexo-c.html', 'container-anexo-c'),
+    loadSection('anexo-d.html', 'container-anexo-d'),
+    loadSection('anexo-e.html', 'container-anexo-e'),
+    loadSection('anexo-f.html', 'container-anexo-f'),
+    loadSection('anexo-g.html', 'container-anexo-g'),
+    loadSection('anexo-h.html', 'container-anexo-h'),
+    loadSection('anexo-i.html', 'container-anexo-i'),
+    loadSection('anexo-k.html', 'container-anexo-k'),
+    loadSection('anexo-l.html', 'container-anexo-l')
+]).then(() => {
+  console.log('Todas las secciones cargadas');
+});
+</script>
+<script src="tesis-scripts.js"></script>
+</body>
+</html>

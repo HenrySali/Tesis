@@ -1,0 +1,71 @@
+<div class="page" id="anexo-c">
+  <section id="anexo-c">
+<h2>Anexo C: Esquema de Base de Datos y Diagramas UML</h2>
+<p>Esquema consolidado de la base de datos MySQL y diagramas UML del sistema SmartTemp.</p>
+
+<h3>C.1 Tablas Principales de la Base de Datos</h3>
+<h4># Base de Datos MySQL</h4>
+<h4>Descripción General</h4>
+<h4>Funcionamiento</h4>
+<table>
+  <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+  <tbody>
+    <tr><td>id</td><td>INT (PK, AUTO_INCREMENT)</td><td>Identificador único</td></tr>
+    <tr><td>nombre</td><td>VARCHAR</td><td>Nombre del usuario</td></tr>
+    <tr><td>correo_electronico</td><td>VARCHAR</td><td>Email, se usa para login</td></tr>
+    <tr><td>password</td><td>Vexto plano actualmente)</td></tr>
+    <tr><td>Rol</td><td>VARCHAR</td><td>`administrador`, `coordinador`, `operador`, `visualizador`</td></tr>
+    <tr><td>ultimo_ingreso</td><td>DATETIME</td><td>Fecha/hora del último login</td></tr>
+  </tbody>
+</table>
+<h4>Flujo de Datos</h4>
+<h3>C.2 Diagramas UML del Sistema</h3>
+
+<h4>Diagrama de Clases Principal</h4>
+<pre class="diagram">
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│    Sensor       │    │    Equipo       │    │   Medicion      │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ + idsensor      │    │ + idequipo      │    │ + idmedicion    │
+│ + nombre        │◄───┤ + nombre        │    │ + idsensor      │
+│ + ubicacion     │    │ + tipo          │    │ + temperatura   │
+│ + activo        │    │ + sector        │    │ + voltaje       │
+├─────────────────┤    └─────────────────┘    │ + timestamp     │
+│ + leerTemp()    │                           └─────────────────┘
+│ + enviarDatos() │                                    │
+└─────────────────┘                                    │
+         │                                             │
+         │ 1:N                                         │
+         ▼                                             │
+┌─────────────────┐    ┌─────────────────┐            │
+│   Supervision   │    │    Umbral       │            │
+├─────────────────┤    ├─────────────────┤            │
+│ + idsupervision │    │ + idumbral      │            │
+│ + idsensor      │    │ + idsensor      │◄───────────┘
+│ + tipo          │    │ + temp_max      │
+│ + timestamp     │    │ + temp_min      │
+│ + resuelto      │    │ + activo        │
+└─────────────────┘    └─────────────────┘
+</pre>
+
+<h4>Diagrama de Secuencia - Envío de Datos</h4>
+<pre class="diagram">
+ESP8266     WiFi      Servidor     MySQL      WebSocket
+   │         │           │           │           │
+   │ medir() │           │           │           │
+   │◄────────┤           │           │           │
+   │         │           │           │           │
+   │ POST /data         │           │           │
+   │─────────┼──────────►│           │           │
+   │         │           │ INSERT    │           │
+   │         │           │──────────►│           │
+   │         │           │           │ OK        │
+   │         │           │◄──────────┤           │
+   │         │           │ broadcast │           │
+   │         │           │──────────────────────►│
+   │         │ HTTP 200  │           │           │
+   │◄────────┼───────────┤           │           │
+   │         │           │           │           │
+</pre>
+</section>
+</div>

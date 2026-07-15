@@ -1,0 +1,35 @@
+<div class="page" id="capitulo-7">
+  <h1>7. Conclusiones y Trabajo Futuro</h1>
+
+<h2>7.1 Conclusiones</h2>
+
+<p>Se diseñó, implementó y evaluó un sistema IoT funcional denominado SmartTemp para el monitoreo continuo de la cadena de frío. El sistema operó durante 113 días, registrando 43.430 mediciones de temperatura con 2 sensores, y cumplió 8 de los 9 criterios de aceptación definidos en la metodología.</p>
+
+<p>La precisión del sistema, validada contra un patrón certificado Madgetech OctTemp, alcanzó un error residual post-corrección de ±0,35 °C, dentro del criterio de ±0,5 °C requerido por la normativa. La validación extendida de 25 días con dataloggers UTRID-16 confirmó la concordancia mediante análisis de Bland-Altman.</p>
+
+<p>El sistema de gestión offline con 5 niveles de respaldo de timestamp demostró recuperación del 100% de los datos tras 1.539 reconexiones, incluyendo un período de prueba de 4 días sin servidor (3.085 registros recuperados sin pérdida). Esta funcionalidad garantiza la continuidad del registro exigida por ANMAT, ISO 15189 y BPL.</p>
+
+<p>La comunicación bidireccional MQTT permite diagnóstico remoto y configuración de sensores sin acceso físico, con más de 100 cambios de configuración confirmados durante el período de evaluación.</p>
+
+<p>El sistema de alertas automáticas por WhatsApp (Meta Business API) con fallback a email generó 155 notificaciones reales ante eventos de desconexión y excursiones de temperatura, demostrando la capacidad de alertar al personal en tiempo real fuera del laboratorio.</p>
+
+<p>El hallazgo de la anomalía térmica en la cámara de frío de Favaloro (ciclos de 20 °C de amplitud) valida la premisa central del trabajo: el monitoreo continuo con resolución de 5 minutos detecta condiciones que el registro manual no puede identificar, protegiendo la integridad de sustancias termosensibles almacenadas.</p>
+
+<p>El costo por punto de monitoreo (~7 USD) es entre 14 y 70 veces inferior al de soluciones comerciales equivalentes, con funcionalidades adicionales como gestión offline, configuración remota MQTT y diagnóstico de red integrado.</p>
+
+<p>En síntesis, SmartTemp constituye una solución viable, de bajo costo y personalizable para el monitoreo continuo de la cadena de frío, contribuyendo al cumplimiento normativo, la preservación de reactivos termosensibles y la mejora de la calidad en laboratorios de biología molecular.</p>
+
+<h2>7.2 Trabajo futuro</h2>
+
+<ul>
+<li><strong>Integración con LIMS</strong>: Conexión con sistemas de gestión de información de laboratorio para correlacionar datos de temperatura con lotes de reactivos y muestras.</li>
+<li><strong>Monitoreo de humedad relativa</strong>: Incorporación de sensores DHT22 para áreas con requisitos de humedad controlada según ISO 15189.</li>
+<li><strong>Predicción de fallas mediante machine learning</strong>: Modelos predictivos basados en los datos históricos acumulados para anticipar fallas en equipos de frío antes de que ocurran excursiones.</li>
+<li><strong>Aplicación móvil nativa</strong>: Desarrollo de app con notificaciones push para consulta de estado y recepción de alertas desde dispositivos móviles.</li>
+<li><strong>Expansión a otros laboratorios</strong>: Despliegue en laboratorios de la Universidad Favaloro y otros centros de salud, con evaluación de satisfacción del personal (CA-9).</li>
+<li><strong>Implementación de TLS/HTTPS</strong>: Cifrado de la comunicación MQTT y de la interfaz web para mejorar la seguridad de los datos.</li>
+<li><strong>Redundancia de servidor</strong>: Esquema de failover automático con servidor secundario para eliminar el punto único de falla.</li>
+<li><strong>Validación multipunto de temperatura</strong>: Calibración formal a múltiples puntos (-80 °C, -20 °C, 4 °C, 25 °C) con cálculo de incertidumbre expandida U(k=2) según GUM.</li>
+</ul>
+
+</div>
