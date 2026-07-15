@@ -1,0 +1,22 @@
+{
+  "name": "tesis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "check-chars.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://us-east-1.gateway.connections.autonomous-agents.kiro.dev/HenrySali/Tesis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "docx": "^9.7.1",
+    "node-html-parser": "^9.0.0"
+  }
+}
